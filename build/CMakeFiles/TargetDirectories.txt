@@ -1,0 +1,3 @@
+/myProkect/MiniSTL/build/CMakeFiles/rebuild_cache.dir
+/myProkect/MiniSTL/build/CMakeFiles/main.dir
+/myProkect/MiniSTL/build/CMakeFiles/edit_cache.dir
