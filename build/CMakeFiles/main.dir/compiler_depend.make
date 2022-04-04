@@ -173,7 +173,7 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/c++/8/bits/stl_vector.h \
   /usr/include/c++/8/bits/stl_bvector.h \
   /usr/include/c++/8/bits/vector.tcc \
-  ../include/davis_alloc.h \
+  ../include/davis_allocate.h \
   /usr/include/c++/8/cstddef \
   /usr/include/c++/8/climits \
   /usr/lib/gcc/x86_64-redhat-linux/8/include/limits.h \
@@ -205,7 +205,7 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/8/cstddef:
 
-../include/davis_alloc.h:
+../include/davis_allocate.h:
 
 /usr/include/c++/8/bits/vector.tcc:
 
