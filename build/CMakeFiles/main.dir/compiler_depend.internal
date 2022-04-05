@@ -186,4 +186,11 @@ CMakeFiles/main.dir/src/main.cpp.o
  /usr/include/bits/posix2_lim.h
  /usr/include/bits/xopen_lim.h
  /usr/include/bits/uio_lim.h
+ /myProkect/MiniSTL/include/davis_vector.h
+ /myProkect/MiniSTL/include/davis_allocate.h
+ /myProkect/MiniSTL/include/davis_construct.h
+ /myProkect/MiniSTL/include/davis_type_traits.h
+ /myProkect/MiniSTL/include/davis_uninitialized.h
+ /usr/include/string.h
+ /usr/include/strings.h
 

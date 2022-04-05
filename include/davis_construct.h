@@ -1,4 +1,7 @@
+#ifndef _DAVIS_CONSTRUCT_H
+#define _DAVIS_CONSTRUCT_H
 #include <new>
+#include "davis_type_traits.h"
 namespace DAVIS
 {
     template <class T1, class T2>
@@ -22,12 +25,12 @@ namespace DAVIS
     template <class ForwardIterator, class T>
     inline void __destroy(ForwardIterator first, ForwardIterator last, T *)
     {
-        typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
+        typedef typename DAVIS::__type_traits<T>::has_trivial_destructor trivial_destructor;
         __destroy_aux(first, last, trivial_destructor());
     }
 
     template <class ForwardIterator>
-    inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __false_type)
+    inline void __destroy_aux(ForwardIterator first, ForwardIterator last, DAVIS::__false_type)
     {
         for (; first != last; first++)
         {
@@ -36,8 +39,9 @@ namespace DAVIS
     }
 
     template <class ForwardIterator>
-    inline void __destroy_aux(ForwardIterator first, ForwardIterator last, __true_type) {}
+    inline void __destroy_aux(ForwardIterator first, ForwardIterator last, DAVIS::__true_type) {}
 
     inline void destroy(char *, char *) {}
     inline void destroy(wchar_t *, wchar_t *) {}
 }
+#endif

@@ -184,8 +184,19 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/linux/limits.h \
   /usr/include/bits/posix2_lim.h \
   /usr/include/bits/xopen_lim.h \
-  /usr/include/bits/uio_lim.h
+  /usr/include/bits/uio_lim.h \
+  ../include/davis_vector.h \
+  ../include/davis_allocate.h \
+  ../include/davis_construct.h \
+  ../include/davis_type_traits.h \
+  ../include/davis_uninitialized.h \
+  /usr/include/string.h \
+  /usr/include/strings.h
 
+
+../include/davis_type_traits.h:
+
+../include/davis_vector.h:
 
 /usr/include/bits/uio_lim.h:
 
@@ -291,6 +302,8 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/8/x86_64-redhat-linux/bits/ctype_inline.h:
 
+/usr/include/strings.h:
+
 /usr/include/c++/8/bits/streambuf.tcc:
 
 /usr/include/c++/8/bits/hash_bytes.h:
@@ -348,6 +361,8 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/sys/types.h:
 
 /usr/include/bits/types/__fpos64_t.h:
+
+../include/davis_uninitialized.h:
 
 /usr/include/wctype.h:
 
@@ -499,6 +514,8 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/c++/8/cstdlib:
 
+../include/davis_construct.h:
+
 /usr/include/bits/waitflags.h:
 
 /usr/include/c++/8/cerrno:
@@ -524,6 +541,8 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/8/bits/locale_classes.tcc:
 
 /usr/include/stdio.h:
+
+/usr/include/string.h:
 
 /usr/include/bits/types/struct_FILE.h:
 
