@@ -1,15 +1,9 @@
 #ifndef _DAVIS_UNINITIALIZED_H
 #define _DAVIS_UNINITIALIZED_H
-#include <string.h>
+#include <cstring>
 #include "davis_construct.h"
 namespace DAVIS
 {
-    template <class ForwardIterator, class Size, class T>
-    inline ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n, const T &x)
-    {
-        return __uninitialized_fill_n(first, n, x, value_type(first));
-    }
-
     template <class ForwardIterator, class Size, class T, class T1>
     inline ForwardIterator __uninitialized_fill_n(ForwardIterator first, Size n, const T &x, T1 *)
     {
@@ -20,7 +14,8 @@ namespace DAVIS
     template <class ForwardIterator, class Size, class T>
     inline ForwardIterator __uninitialized_fill_n_aux(ForwardIterator first, Size n, const T &x, DAVIS::__true_type)
     {
-        return fill_n(first, n, x);
+        //TODO 使用了标准库的函数
+        return std::fill_n(first, n, x);
     }
 
     template <class ForwardIterator, class Size, class T>
@@ -33,6 +28,12 @@ namespace DAVIS
             ++cur;
         }
         return cur;
+    }
+
+    template <class ForwardIterator, class Size, class T>
+    inline ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n, const T &x)
+    {
+        return __uninitialized_fill_n(first, n, x, value_type(first));
     }
 
     template <class InputIterator, class ForwardIterator>
@@ -51,7 +52,8 @@ namespace DAVIS
     template <class InputIterator, class ForwardIterator>
     inline ForwardIterator __uninitialized_copy_aux(InputIterator first, InputIterator last, ForwardIterator result, DAVIS::__true_type)
     {
-        return copy(first, last, result);
+        //TODO 使用了标准库的函数
+        return std::copy(first, last, result);
     }
 
     template <class InputIterator, class ForwardIterator>
@@ -93,7 +95,7 @@ namespace DAVIS
     template <class ForwardIterator, class T>
     inline void __uninitialized_fill_aux(ForwardIterator first, ForwardIterator last, const T &x, DAVIS::__true_type)
     {
-        fill(first, last, x);
+        std::fill(first, last, x);
     }
     template <class ForwardIterator, class T>
     inline void __uninitialized_fill_aux(ForwardIterator first, ForwardIterator last, const T &x, DAVIS::__false_type)

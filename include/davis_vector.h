@@ -1,113 +1,144 @@
 #ifndef _DAVIS_VECTOR_H
 #define _DAVIS_VECTOR_H
 #include "davis_allocate.h"
-#include "davis_construct.h"
 #include "davis_uninitialized.h"
+#include "davis_construct.h"
 namespace DAVIS
 {
-    template <class T, class Alloc>
-    class vector
+    template <class _Tp, class _Alloc>
+    class _Vector_base
     {
     public:
-        typedef T value_type;
-        typedef value_type *pointer;
-        typedef value_type *iterator;
-        typedef value_type &reference;
-        typedef size_t size_type;
-        typedef ptrdiff_t difference_type;
+        typedef _Alloc allocator_type;
+        allocator_type get_allocator() const { return allocator_type(); }
+
+
+        _Vector_base(const _Alloc &)
+            : _M_start(0), _M_finish(0), _M_end_of_storage(0) {}
+
+        _Vector_base(size_t __n, const _Alloc &)
+            : _M_start(0), _M_finish(0), _M_end_of_storage(0)
+        {
+            _M_start = _M_allocate(__n);
+            _M_finish = _M_start;
+            _M_end_of_storage = _M_start + __n;
+        }
+
+        ~_Vector_base() { _M_deallocate(_M_start, _M_end_of_storage - _M_start); }
 
     protected:
-        typedef DAVIS::allocator<value_type> data_allocator;
-        iterator start;
-        iterator finish;
-        iterator end_of_storage;
+        _Tp *_M_start;         
+        _Tp *_M_finish;        
+        _Tp *_M_end_of_storage;
+        //TODO _M_data_allocator应该要如何赋值
+        DAVIS::allocator<_Tp> _M_data_allocator;
 
-        void insert_aux(iterator position, const T &x);
-
-        void deallocate()
+        _Tp *_M_allocate(size_t __n)
         {
-            if (start)
-            {
-                data_allocator::deallocate(start, end_of_storage - start);
-            }
+            return _M_data_allocator.allocate(__n);
         }
-
-        void fill_initialize(size_type n, const T &value)
+        void _M_deallocate(_Tp *__p, size_t __n)
         {
-            start = allocate_and_fill(n, value);
-            finish = start + n;
-            end_of_storage = finish;
+            _M_data_allocator.deallocate(__p, __n);
         }
+    };
+
+    template <class _Tp, class _Alloc = DAVIS::allocator<_Tp>>
+    class vector : protected _Vector_base<_Tp, _Alloc>
+    {
+    private:
+        typedef _Vector_base<_Tp, _Alloc> _Base;
 
     public:
-        iterator begin() { return start; }
-        iterator end() { return finish; }
-        size_type size() const { return size_type(end() - begin()); }
-        size_type capacity() const { return size_type(end_of_storage - begin()); }
-        bool empty() const { return begin() == end(); }
-        reference operator[](size_type n) { return *(begin() + n); }
+        typedef _Tp                             value_type;
+        typedef value_type*                     pointer;
+        typedef const value_type*               const_pointer;
+        typedef value_type*                     iterator;
+        typedef const value_type*               const_iterator;
+        typedef value_type&                     reference;
+        typedef const value_type&               const_reference;
+        typedef size_t                          size_type;
+        typedef ptrdiff_t                       difference_type;
 
-        vector() : start(0), finish(0), end_of_storage(0) {}
-        vector(size_type n, const T &value) { fill_initialize(n, value); };
-        vector(int n, const T &value) { fill_initialize(n, value); };
-        vector(long n, const T &value) { fill_initialize(n, value); };
-        explicit vector(size_type n) { fill_initialize(n, T()); }
-
-        ~vector()
-        {
-            DAVIS::destroy(start, finish);
-            deallocate();
-        }
-        reference front() { return *begin(); }
-        reference back() { return *(end() - 1); }
-        void push_back(const T &x)
-        {
-            if (finish != end_of_storage)
-            {
-                DAVIS::construct(finish, x);
-                ++finish;
-            }
-            else
-            {
-                insert_aux(end(), x);
-            }
-        }
-        void pop_back()
-        {
-            --finish;
-            DAVIS::destroy(finish);
-        }
-        iterator erase(iterator position)
-        {
-            if (position + 1 != end())
-            {
-                copy(position + 1, finish, position);
-            }
-            --finish;
-            destroy(finish);
-            return position;
-        }
-        void resize(size_type new_size, const T &x)
-        {
-            if (new_size < size())
-            {
-                erase(begin() + new_size, end());
-            }
-            else
-            {
-                insert(end(), new_size - size(), x);
-            }
-        }
-        void resize(size_type new_size) { return resize(new_size, T()); }
-        void clear() { erase(begin(), end()); }
+        typedef typename _Base::allocator_type           allocator_type;
+        allocator_type get_allocator() const { return _Base::get_allocator(); }
 
     protected:
-        iterator allocate_and_fill(size_type n, const T &x)
+        using _Base::_M_allocate;
+        using _Base::_M_deallocate;
+        using _Base::_M_end_of_storage;
+        using _Base::_M_finish;
+        using _Base::_M_start;
+
+    protected:
+        void _M_insert_aux(iterator __position, const _Tp &__x);
+        void _M_insert_aux(iterator __position);
+
+    public:
+        iterator begin() { return _M_start; }
+        const_iterator begin() const { return _M_start; }
+        iterator end() { return _M_finish; }
+        const_iterator end() const { return _M_finish; }
+
+        size_type size() const { return static_cast<size_type>(end() - begin()); }
+        size_type capacity() const { return static_cast<size_type>(_M_end_of_storage - begin()); }
+        bool empty() const { return begin() == end(); }
+        size_type max_size() const { return size_type(-1) / sizeof(_Tp); }
+
+        reference operator[](size_type __n) { return *(begin() + __n); }
+        const_reference operator[](size_type __n) const { return *(begin() + __n); }
+
+
+        //构造函数
+        explicit vector(const allocator_type &__a = allocator_type()) : _Base(__a) {}
+        vector(size_type __n, const _Tp &__value,
+               const allocator_type &__a = allocator_type())
+            : _Base(__n, __a)
         {
-            iterator result = data_allocator::allocate(n);
-            DAVIS::uninitialized_fill_n(result, n, x);
-            return result;
+            _M_finish = DAVIS::uninitialized_fill_n(_M_start, __n, __value);
         }
+
+        explicit vector(size_type __n)
+            : _Base(__n, allocator_type())
+        {
+            _M_finish = DAVIS::uninitialized_fill_n(_M_start, __n, _Tp());
+        }
+
+        // 拷贝构造，构造拥有 __x 内容的容器
+        vector(const vector<_Tp, _Alloc> &__x)
+            : _Base(__x.size(), __x.get_allocator())
+        {
+            _M_finish = DAVIS::uninitialized_copy(__x.begin(), __x.end(), _M_start);
+        }
+
+        ~vector() { DAVIS::destroy(_M_start, _M_finish); }
+
+        reference front() { return *begin(); }
+        const_reference front() const { return *begin(); }
+        reference back() { return *(end() - 1); }
+        const_reference back() const { return *(end() - 1); }
+
+
+        void push_back(const _Tp & __x)
+        {
+            if (_M_finish != _M_end_of_storage)
+            {
+                DAVIS::construct(_M_finish, __x);
+                ++_M_finish;
+            }
+            else
+            {
+                _M_insert_aux(end(), __x);
+            }
+        }
+
+        void pop_back()
+        {
+            --_M_finish;
+            DAVIS::destroy(_M_finish);
+        }
+
+        
     };
 }
 

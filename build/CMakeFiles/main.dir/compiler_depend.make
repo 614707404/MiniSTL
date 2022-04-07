@@ -187,11 +187,13 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/bits/uio_lim.h \
   ../include/davis_vector.h \
   ../include/davis_allocate.h \
+  ../include/davis_uninitialized.h \
+  /usr/include/c++/8/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   ../include/davis_construct.h \
   ../include/davis_type_traits.h \
-  ../include/davis_uninitialized.h \
-  /usr/include/string.h \
-  /usr/include/strings.h
+  ../include/davis_iterator.h
 
 
 ../include/davis_type_traits.h:
@@ -280,6 +282,8 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
 
 /usr/include/stdint.h:
 
+../include/davis_iterator.h:
+
 /usr/include/c++/8/backward/binders.h:
 
 /usr/include/c++/8/exception:
@@ -331,6 +335,8 @@ CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp \
 /usr/include/c++/8/bits/localefwd.h:
 
 /usr/include/c++/8/bits/exception.h:
+
+/usr/include/c++/8/cstring:
 
 /usr/include/bits/types/clock_t.h:
 

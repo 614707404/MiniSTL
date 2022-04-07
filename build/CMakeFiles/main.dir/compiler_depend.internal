@@ -188,9 +188,11 @@ CMakeFiles/main.dir/src/main.cpp.o
  /usr/include/bits/uio_lim.h
  /myProkect/MiniSTL/include/davis_vector.h
  /myProkect/MiniSTL/include/davis_allocate.h
- /myProkect/MiniSTL/include/davis_construct.h
- /myProkect/MiniSTL/include/davis_type_traits.h
  /myProkect/MiniSTL/include/davis_uninitialized.h
+ /usr/include/c++/8/cstring
  /usr/include/string.h
  /usr/include/strings.h
+ /myProkect/MiniSTL/include/davis_construct.h
+ /myProkect/MiniSTL/include/davis_type_traits.h
+ /myProkect/MiniSTL/include/davis_iterator.h
 
