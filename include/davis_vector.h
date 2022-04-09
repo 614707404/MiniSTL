@@ -12,11 +12,10 @@ namespace DAVIS
         typedef _Alloc allocator_type;
         allocator_type get_allocator() const { return allocator_type(); }
 
+        _Vector_base(const _Alloc &__x)
+            : _M_start(0), _M_finish(0), _M_end_of_storage(0)  {}
 
-        _Vector_base(const _Alloc &)
-            : _M_start(0), _M_finish(0), _M_end_of_storage(0) {}
-
-        _Vector_base(size_t __n, const _Alloc &)
+        _Vector_base(size_t __n, const _Alloc &__x)
             : _M_start(0), _M_finish(0), _M_end_of_storage(0)
         {
             _M_start = _M_allocate(__n);
@@ -30,7 +29,7 @@ namespace DAVIS
         _Tp *_M_start;         
         _Tp *_M_finish;        
         _Tp *_M_end_of_storage;
-        //TODO _M_data_allocator应该要如何赋值
+        
         DAVIS::allocator<_Tp> _M_data_allocator;
 
         _Tp *_M_allocate(size_t __n)
@@ -118,28 +117,79 @@ namespace DAVIS
         reference back() { return *(end() - 1); }
         const_reference back() const { return *(end() - 1); }
 
-
-        void push_back(const _Tp & __x)
-        {
-            if (_M_finish != _M_end_of_storage)
-            {
-                DAVIS::construct(_M_finish, __x);
-                ++_M_finish;
-            }
-            else
-            {
-                _M_insert_aux(end(), __x);
-            }
-        }
-
-        void pop_back()
-        {
-            --_M_finish;
-            DAVIS::destroy(_M_finish);
-        }
-
-        
+    public:
+        void push_back(const _Tp& __val);
+        void push_back();
+        void pop_back();
+        iterator insert(iterator __position, const _Tp& __val);
+        iterator insert(iterator __position);
+        void reverse(size_type __n);
+        void assign(size_type __n,const _Tp& __val);
+        void _M_fill_assign(size_type __n, const _Tp & __val);
+        iterator erase(iterator __position);
+        iterator erase(iterator __first,iterator __last);
+        void resize(size_type __new_size, const _Tp& __x);
+        void resize(size_type __new_size);
+        void clear();
     };
+
+    template <class _Tp, class _Alloc>
+    void vector<_Tp, _Alloc>::push_back(const_reference __x)
+    {
+        if (_M_finish != _M_end_of_storage)
+        {
+            DAVIS::construct(_M_finish, __x);
+            ++_M_finish;
+        }
+        else
+        {
+            _M_insert_aux(end(), __x);
+        }
+    }
+
+    template <class _Tp, class _Alloc>
+    void vector<_Tp, _Alloc>::pop_back()
+    {
+        --_M_finish;
+        DAVIS::destroy(_M_finish);
+    }
+    template <class _Tp, class _Alloc>
+    void vector<_Tp, _Alloc>::_M_insert_aux(iterator __position, const _Tp &__x)
+    {
+        if(_M_finish!=_M_end_of_storage)
+        {
+            construct(_M_finish, *(_M_finish - 1));
+            ++_M_finish;
+            _Tp __x_copy = __x;
+            std::copy_backward(__position, _M_finish - 2, _M_finish - 1);
+            *__position = __x_copy;
+        }
+        else{
+            const size_type __old_size = size();
+            size_type __new_size = __old_size == 0 ? 1 : 2 * __old_size;
+            iterator __new_start = _M_allocate(__new_size);
+            iterator __new_finish = __new_start ;
+            try
+            {
+                __new_finish = DAVIS::uninitialized_copy(_M_start, _M_finish, __new_start);
+                construct(__new_finish, __x);
+                ++__new_finish;
+                __new_finish = DAVIS::uninitialized_copy(__position, _M_finish, __new_finish);
+            }
+            catch (...)
+            {
+                DAVIS::destroy(__new_start, __new_finish);
+                _M_deallocate(__new_start, __new_size);
+                throw;
+            }
+            DAVIS::destroy(begin(), end());
+            _M_deallocate(_M_start, _M_end_of_storage - _M_start);
+            _M_start = __new_start;
+            _M_finish = __new_finish;
+            _M_end_of_storage = _M_start + __new_size;
+        }
+    }
+
 }
 
 #endif

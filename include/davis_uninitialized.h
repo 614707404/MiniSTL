@@ -5,6 +5,44 @@
 namespace DAVIS
 {
     template <class ForwardIterator, class Size, class T, class T1>
+    inline ForwardIterator __uninitialized_fill_n(ForwardIterator first, Size n, const T &x, T1 *);
+
+    template <class ForwardIterator, class Size, class T>
+    inline ForwardIterator __uninitialized_fill_n_aux(ForwardIterator first, Size n, const T &x, DAVIS::__true_type);
+
+    template <class ForwardIterator, class Size, class T>
+    inline ForwardIterator __uninitialized_fill_n_aux(ForwardIterator first, Size n, const T &x, DAVIS::__false_type);
+
+    template <class ForwardIterator, class Size, class T>
+    inline ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n, const T &x);
+
+    template <class InputIterator, class ForwardIterator>
+    inline ForwardIterator uninitialized_copy(InputIterator first, InputIterator last, ForwardIterator result);
+
+    template <class InputIterator, class ForwardIterator, class T>
+    inline ForwardIterator __uninitialized_copy(InputIterator first, InputIterator last, ForwardIterator result, T *);
+
+    template <class InputIterator, class ForwardIterator>
+    inline ForwardIterator __uninitialized_copy_aux(InputIterator first, InputIterator last, ForwardIterator result, DAVIS::__true_type);
+
+    template <class InputIterator, class ForwardIterator>
+    inline ForwardIterator __uninitialized_copy_aux(InputIterator first, InputIterator last, ForwardIterator result, DAVIS::__false_type);
+
+    inline char *uninitialized_copy(const char *first, const char *last, char *result);
+
+    inline wchar_t *uninitialized_copy(const wchar_t *first, const wchar_t *last, wchar_t *result);
+
+    template <class ForwardIterator, class T>
+    inline void uninitialized_fill(ForwardIterator first, ForwardIterator last, const T &x);
+
+    template <class ForwardIterator, class T, class T1>
+    inline void __uninitialized_fill(ForwardIterator first, ForwardIterator last, const T &x, T1 *);
+
+    template <class ForwardIterator, class T>
+    inline void __uninitialized_fill_aux(ForwardIterator first, ForwardIterator last, const T &x, DAVIS::__true_type);
+    template <class ForwardIterator, class T>
+    inline void __uninitialized_fill_aux(ForwardIterator first, ForwardIterator last, const T &x, DAVIS::__false_type);
+    template <class ForwardIterator, class Size, class T, class T1>
     inline ForwardIterator __uninitialized_fill_n(ForwardIterator first, Size n, const T &x, T1 *)
     {
         typedef typename DAVIS::__type_traits<T1>::is_POD_type is_POD;
