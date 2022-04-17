@@ -10,6 +10,11 @@ namespace DAVIS
     {
         new (p) T1(value);
     }
+    template <class T1>
+    inline void construct(T1 *p)
+    {
+        new (p) T1();
+    }
 
     template <class T>
     inline void destroy(T *pointer)
