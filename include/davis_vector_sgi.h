@@ -3,7 +3,7 @@
 #include "davis_allocate.h"
 #include "davis_uninitialized.h"
 #include "davis_construct.h"
-namespace DAVIS
+namespace davis
 {
     template <class _Tp, class _Alloc>
     class _Vector_base
@@ -30,7 +30,7 @@ namespace DAVIS
         _Tp *_M_finish;        
         _Tp *_M_end_of_storage;
         
-        DAVIS::allocator<_Tp> _M_data_allocator;
+        davis::allocator<_Tp> _M_data_allocator;
 
         _Tp *_M_allocate(size_t __n)
         {
@@ -42,7 +42,7 @@ namespace DAVIS
         }
     };
 
-    template <class _Tp, class _Alloc = DAVIS::allocator<_Tp>>
+    template <class _Tp, class _Alloc = davis::allocator<_Tp>>
     class vector : protected _Vector_base<_Tp, _Alloc>
     {
     private:
@@ -77,23 +77,23 @@ namespace DAVIS
                const allocator_type &__a = allocator_type())
             : _Base(__n, __a)
         {
-            _M_finish = DAVIS::uninitialized_fill_n(_M_start, __n, __value);
+            _M_finish = davis::uninitialized_fill_n(_M_start, __n, __value);
         }
 
         explicit vector(size_type __n)
             : _Base(__n, allocator_type())
         {
-            _M_finish = DAVIS::uninitialized_fill_n(_M_start, __n, _Tp());
+            _M_finish = davis::uninitialized_fill_n(_M_start, __n, _Tp());
         }
 
         // 拷贝构造，构造拥有 __x 内容的容器
         vector(const vector<_Tp, _Alloc> &__x)
             : _Base(__x.size(), __x.get_allocator())
         {
-            _M_finish = DAVIS::uninitialized_copy(__x.begin(), __x.end(), _M_start);
+            _M_finish = davis::uninitialized_copy(__x.begin(), __x.end(), _M_start);
         }
 
-        ~vector() { DAVIS::destroy(_M_start, _M_finish); }
+        ~vector() { davis::destroy(_M_start, _M_finish); }
 
     public:
         iterator begin() { return _M_start; }
@@ -123,7 +123,7 @@ namespace DAVIS
         template <class _InputIterator>
         void insert(iterator __pos, _InputIterator __first, _InputIterator __last)
         {
-            typedef typename DAVIS::_Is_integer<_InputIterator>::_Integral _Integral;
+            typedef typename davis::_Is_integer<_InputIterator>::_Integral _Integral;
             _M_insert_dispatch(__pos,__first,__last,_Integral());
         }
 
@@ -136,7 +136,7 @@ namespace DAVIS
         template <class _InputIterator>
         void _M_insert_dispatch(iterator __pos, _InputIterator __first, _InputIterator __last, __false_type)
         {
-            _M_range_insert(__pos, __first, __last, DAVIS::iterator_category(__first));
+            _M_range_insert(__pos, __first, __last, davis::iterator_category(__first));
         }
 
         //TODO reverse_iterater
@@ -178,7 +178,7 @@ namespace DAVIS
     {
         if (_M_finish != _M_end_of_storage)
         {
-            DAVIS::construct(_M_finish, __x);
+            davis::construct(_M_finish, __x);
             ++_M_finish;
         }
         else
@@ -192,7 +192,7 @@ namespace DAVIS
     {
         if (_M_finish != _M_end_of_storage)
         {
-            DAVIS::construct(_M_finish);
+            davis::construct(_M_finish);
             ++_M_finish;
         }
         else
@@ -205,7 +205,7 @@ namespace DAVIS
     void vector<_Tp, _Alloc>::pop_back()
     {
         --_M_finish;
-        DAVIS::destroy(_M_finish);
+        davis::destroy(_M_finish);
     }
 
     template <class _Tp, class _Alloc>
@@ -214,7 +214,7 @@ namespace DAVIS
         size_type __n=__position-begin();
         if (_M_finish != _M_end_of_storage && __position==end())
         {
-            DAVIS::construct(_M_finish, __val);
+            davis::construct(_M_finish, __val);
             ++_M_finish;
         }
         else
@@ -230,7 +230,7 @@ namespace DAVIS
         size_type __n = __position - begin();
         if (_M_finish != _M_end_of_storage && __position == end())
         {
-            DAVIS::construct(_M_finish);
+            davis::construct(_M_finish);
             ++_M_finish;
         }
         else
@@ -247,7 +247,7 @@ namespace DAVIS
             std::copy(__position + 1, end(), __position);
         }
         --_M_finish;
-        DAVIS::destroy(_M_finish); 
+        davis::destroy(_M_finish); 
         return __position;
     }
     template <class _Tp, class _Alloc>
@@ -256,7 +256,7 @@ namespace DAVIS
         iterator __i=std::copy(__last,_M_finish,__first);
         for(;__i!=_M_finish;__i++)
         {
-            DAVIS::destroy(__i);
+            davis::destroy(__i);
         }
         _M_finish = _M_finish - (__last - __first);
         return __first;
@@ -306,18 +306,18 @@ namespace DAVIS
             try
             {
                 
-                __new_finish = DAVIS::uninitialized_copy(_M_start, __position, __new_start);
+                __new_finish = davis::uninitialized_copy(_M_start, __position, __new_start);
                 construct(__new_finish, __x);
                 ++__new_finish;
-                __new_finish = DAVIS::uninitialized_copy(__position, _M_finish, __new_finish);
+                __new_finish = davis::uninitialized_copy(__position, _M_finish, __new_finish);
             }
             catch (...)
             {
-                DAVIS::destroy(__new_start, __new_finish);
+                davis::destroy(__new_start, __new_finish);
                 _M_deallocate(__new_start, __new_size);
                 throw;
             }
-            DAVIS::destroy(begin(), end());
+            davis::destroy(begin(), end());
             _M_deallocate(_M_start, _M_end_of_storage - _M_start);
             _M_start = __new_start;
             _M_finish = __new_finish;
@@ -337,16 +337,16 @@ namespace DAVIS
                 iterator __old_finish = _M_finish; 
                 if (__element_cnt > __n)
                 {
-                    DAVIS::uninitialized_copy(_M_finish-__n,_M_finish,_M_finish);
+                    davis::uninitialized_copy(_M_finish-__n,_M_finish,_M_finish);
                     _M_finish+=__n;
                     std::copy_backward(__pos,__old_finish-__n,__old_finish);
                     std::fill(__pos,__pos+__n,__x_copy);
                 }
                 else
                 {
-                    DAVIS::uninitialized_fill_n(_M_finish,__n-__element_cnt,__x_copy);
+                    davis::uninitialized_fill_n(_M_finish,__n-__element_cnt,__x_copy);
                     _M_finish += __n - __element_cnt;
-                    DAVIS::uninitialized_copy(__pos, __old_finish, _M_finish);
+                    davis::uninitialized_copy(__pos, __old_finish, _M_finish);
                     _M_finish += __element_cnt;
                     std::fill(__pos, __old_finish, __x_copy);
                 }
@@ -359,17 +359,17 @@ namespace DAVIS
                 iterator __new_finish = __new_start;
                 try
                 {
-                    __new_finish = DAVIS::uninitialized_copy(_M_start, __pos, __new_start);
-                    __new_finish = DAVIS::uninitialized_fill_n(__new_finish, __n, __x);
-                    __new_finish = DAVIS::uninitialized_copy(__pos, _M_finish, __new_finish);
+                    __new_finish = davis::uninitialized_copy(_M_start, __pos, __new_start);
+                    __new_finish = davis::uninitialized_fill_n(__new_finish, __n, __x);
+                    __new_finish = davis::uninitialized_copy(__pos, _M_finish, __new_finish);
                 }
                 catch (...)
                 {
-                    DAVIS::destroy(__new_start, __new_finish);
+                    davis::destroy(__new_start, __new_finish);
                     _M_deallocate(__new_start, __new_size);
                     throw;
                 }
-                DAVIS::destroy(begin(), end());
+                davis::destroy(begin(), end());
                 _M_deallocate(_M_start, _M_end_of_storage - _M_start);
                 _M_start = __new_start;
                 _M_finish = __new_finish;
@@ -395,14 +395,14 @@ namespace DAVIS
     {
         if (__first != __last)
         {
-            size_type __n = DAVIS::distance(__first,__last);
+            size_type __n = davis::distance(__first,__last);
             if (size_type(_M_end_of_storage - _M_finish) >= __n)
             {
                 const size_type __element_cnt = _M_finish - __pos;
                 iterator __old_finish = _M_finish;
                 if (__element_cnt > __n)
                 {
-                    DAVIS::uninitialized_copy(_M_finish - __n, _M_finish, _M_finish);
+                    davis::uninitialized_copy(_M_finish - __n, _M_finish, _M_finish);
                     _M_finish += __n;
                     std::copy_backward(__pos, __old_finish - __n, __old_finish);
                     std::copy(__first, __last , __pos);
@@ -412,9 +412,9 @@ namespace DAVIS
                     _ForwardIterator __mid = __first;
                     advance(__mid, __element_cnt);
 
-                    DAVIS::uninitialized_copy(__mid, __last, _M_finish);
+                    davis::uninitialized_copy(__mid, __last, _M_finish);
                     _M_finish += __n - __element_cnt;
-                    DAVIS::uninitialized_copy(__pos, __old_finish, _M_finish);
+                    davis::uninitialized_copy(__pos, __old_finish, _M_finish);
                     _M_finish += __element_cnt;
                     std::copy(__first, __mid, __pos);
                 }
@@ -427,17 +427,17 @@ namespace DAVIS
                 iterator __new_finish = __new_start;
                 try
                 {
-                    __new_finish = DAVIS::uninitialized_copy(_M_start, __pos, __new_start);
-                    __new_finish = DAVIS::uninitialized_copy(__first, __last, __new_finish);
-                    __new_finish = DAVIS::uninitialized_copy(__pos, _M_finish, __new_finish);
+                    __new_finish = davis::uninitialized_copy(_M_start, __pos, __new_start);
+                    __new_finish = davis::uninitialized_copy(__first, __last, __new_finish);
+                    __new_finish = davis::uninitialized_copy(__pos, _M_finish, __new_finish);
                 }
                 catch (...)
                 {
-                    DAVIS::destroy(__new_start, __new_finish);
+                    davis::destroy(__new_start, __new_finish);
                     _M_deallocate(__new_start, __new_size);
                     throw;
                 }
-                DAVIS::destroy(begin(), end());
+                davis::destroy(begin(), end());
                 _M_deallocate(_M_start, _M_end_of_storage - _M_start);
                 _M_start = __new_start;
                 _M_finish = __new_finish;

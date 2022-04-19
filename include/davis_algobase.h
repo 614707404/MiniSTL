@@ -1,7 +1,7 @@
 #ifndef _DAVIS_ALGOBASE_H
 #define _DAVIS_ALGOBASE_H
 
-namespace DAVIS
+namespace davis
 {
     template <class _ForwardIter, class _Tp>
     void fill(_ForwardIter __first, _ForwardIter __last ,const _Tp& __value)

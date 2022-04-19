@@ -1,7 +1,7 @@
 #ifndef DAVIS_DEQUE_SGI_H
 #define DAVIS_DEQUE_SGI_H
 
-namespace DAVIS
+namespace davis
 {
     inline size_t __deque_buf_size(size_t __size)
     {
@@ -160,7 +160,7 @@ namespace DAVIS
         iterator _M_start;
         iterator _M_finish;
 
-        DAVIS::allocator<_Tp> _M_data_allocator;
+        davis::allocator<_Tp> _M_data_allocator;
 
         _Tp *_M_allocate_node()
         {   return _M_data_allocator.allocate(__deque_buf_size(sizeof(_Tp)));   }
@@ -231,7 +231,7 @@ namespace DAVIS
             _M_deallocate_node(*__n);
     }
 
-    template <class _Tp, class _Alloc=DAVIS::allocator<_Tp>>
+    template <class _Tp, class _Alloc=davis::allocator<_Tp>>
     class deque : protected _Deque_base<_Tp,_Alloc>
     {
         typedef _Deque_base<_Tp,_Alloc>             _Base;

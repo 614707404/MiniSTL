@@ -1,6 +1,6 @@
 #ifndef _DAVIS_TYPE_TRAITS_H
 #define _DAVIS_TYPE_TRAITS_H
-namespace DAVIS
+namespace davis
 {
 
     struct __true_type

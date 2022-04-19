@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <climits>
 #include <iostream>
-namespace DAVIS
+namespace davis
 {
     template <class T>
     inline T *_allocate(ptrdiff_t size, T *)

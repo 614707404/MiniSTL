@@ -1,7 +1,7 @@
 #ifndef _DAVIS_LIST_SGI_H
 #define _DAVIS_LIST_SGI_H
 #include "davis_allocate.h"
-namespace DAVIS
+namespace davis
 {
     struct _List_Node_base
     {
@@ -119,10 +119,10 @@ namespace DAVIS
 
     protected:
         _List_Node<_Tp>* _M_node;
-        DAVIS::allocator<_Tp> _M_data_allocator;
+        davis::allocator<_Tp> _M_data_allocator;
     }
 
-    template <class _Tp, class _Alloc = DAVIS::allocator<_Tp>>
+    template <class _Tp, class _Alloc = davis::allocator<_Tp>>
     class list : protected _List_base<_Tp,_Alloc>
     {
     private:
@@ -154,7 +154,7 @@ namespace DAVIS
             _Node* __p=_M_get_node();
             try
             {
-                DAVIS::construct(&__p->_M_data,__x);
+                davis::construct(&__p->_M_data,__x);
             }
             catch(...)
             {
@@ -168,7 +168,7 @@ namespace DAVIS
             _Node *__p = _M_get_node();
             try
             {
-                DAVIS::construct(&__p->_M_data);
+                davis::construct(&__p->_M_data);
             }
             catch (...)
             {
@@ -190,7 +190,7 @@ namespace DAVIS
         //TODO 逆迭代器部分
 
         bool empty() { return _M_node->_M_next == _M_node; }
-        size_type size() { return static_cast<size_type>(DAVIS::distance(begin(), end())); }
+        size_type size() { return static_cast<size_type>(davis::distance(begin(), end())); }
         size_type max_size() { return size_type(-1); }
 
         reference front() {return *begin();}
@@ -378,7 +378,7 @@ namespace DAVIS
         node_next->_M_prev = node_prev;
         node_prev->_M_next = node_next;
         _Node* __n = (_Node*)__position._M_node;
-        DAVIS::destory(&__n->_M_data);
+        davis::destory(&__n->_M_data);
         _M_put_node(__n);
         return iterator((_Node*)node_next);
     }
