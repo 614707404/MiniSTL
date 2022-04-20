@@ -219,7 +219,7 @@ namespace davis
         }
         else
         {
-            _M_insert_aux(end(), __val);
+            _M_insert_aux(__position, __val);
         }
         return begin()+__n;
     }

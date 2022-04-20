@@ -149,5 +149,7 @@ namespace davis
     {
         __advance(__i, __n, iterator_category(__i));
     }
-}
+    // TODO reverse_iterator
+    
+} // namespace davis
 #endif
