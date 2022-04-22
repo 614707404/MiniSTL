@@ -99,8 +99,8 @@ namespace davis
 
     // Member functions
     protected:
-        _Node* _M_get_node();
-        void _M_put_node(_Node* p);
+        _Node* _M_get_node() { return _M_allocator.allocate(1); }
+        void _M_put_node(_Node *p) { return _M_allocator.deallocate(p,1); }
         template <class _Integer>
         void _M_assign_dispatch(_Integer n, _Integer val, __true_type);
         template <class _InputIterator>
@@ -626,6 +626,91 @@ namespace davis
             std::swap(tmp->_M_next, tmp->_M_prev);
             tmp = tmp->_M_prev; 
         } while (tmp != this->_M_node);
+    }
+    template <class _Tp, class _Alloc>
+    template <class _Integer>
+    void list<_Tp, _Alloc>::_M_assign_dispatch(_Integer n, _Integer val, __true_type)
+    {
+        _M_fill_assign((size_type)__n, (_Tp)__val);
+    }
+    template <class _Tp, class _Alloc>
+    template <class _InputIterator>
+    void list<_Tp, _Alloc>::_M_assign_dispatch(_InputIterator first, _InputIterator last, __false_type)
+    {
+        iterator it1=begin();
+        iterator it2=end();
+        for(;it1!=it2&&first!=last;it1++,first++)
+        {
+            *it1=*first;
+        }
+        if(first==last)
+        {
+            erase(it1,it2);
+        }
+        else{
+            insert(it1,first,last);
+        }
+    }
+    template <class _Tp, class _Alloc>
+    void list<_Tp, _Alloc>::_M_fill_assign(size_type n, const _Tp &val)
+    {
+        iterator it=begin();
+        for(;it!=end()&&n>0;it++,n--)
+        {
+            *it=val;
+        }
+        if(n>0){
+            insert(end(),n,val);
+        }else{
+            erase(it,end());
+        }
+    }
+    template <class _Tp, class _Alloc>
+    _Node* list<_Tp, _Alloc>::_M_create_node(const value_type& x)
+    {
+        _Node* p=_M_get_node();
+        try{
+            davis::construct(&p->_M_data,x);
+        }catch(...){
+            _M_put_node(p);
+        }
+        return p;
+    }
+    template <class _Tp, class _Alloc>
+    void list<_Tp, _Alloc>::_M_fill_insert(iterator pos, size_type n, const _Tp &x)
+    {
+        for (; n > 0; n--)
+        {
+            insert(pos, x);
+        }
+    }
+    template <class _Tp, class _Alloc>
+    template <class _Integer>
+    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _Integer n, _Integer x, __true_type)
+    {
+        _M_fill_insert(__pos, (size_type)__n, (_Tp)__x);
+    }
+    template <class _Tp, class _Alloc>
+    template <class _InputIterator>
+    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _InputIterator first, _InputIterator last, __false_type)
+    {
+        for (; first != last; ++fisrt)
+        {
+            insert(position, *fisrt);
+        }
+    }
+    template <class _Tp, class _Alloc>
+    void list<_Tp, _Alloc>::transfer(iterator position, iterator first, iterator last)
+    {
+        last._M_node->_M_prev->_M_next = position._M_node;
+        first._M_node->_M_prev->_M_next = __last._M_node;
+        position._M_node->_M_prev->_M_next = first._M_node;
+
+        // Splice [first, last) into its new position.
+        _List_node_base *tmp = position._M_node->_M_prev;
+        position._M_node->_M_prev = last._M_node->_M_prev;
+        last._M_node->_M_prev = first._M_node->_M_prev;
+        first._M_node->_M_prev = tmp;
     }
 
     // Non-member function overloads
