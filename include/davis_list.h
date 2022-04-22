@@ -71,9 +71,8 @@ namespace davis
             return __tmp;
         }
     };
-    
-    
-    template <class _Tp, class _Alloc=davis::allocator<_Tp>>
+
+    template <class _Tp, class _Alloc = davis::allocator<_Tp>>
     class list
     {
     // Member types
@@ -102,16 +101,16 @@ namespace davis
         _Node* _M_get_node() { return _M_allocator.allocate(1); }
         void _M_put_node(_Node *p) { return _M_allocator.deallocate(p,1); }
         template <class _Integer>
-        void _M_assign_dispatch(_Integer n, _Integer val, __true_type);
+        void _M_assign_dispatch(_Integer n, _Integer val, davis::__true_type);
         template <class _InputIterator>
-        void _M_assign_dispatch(_InputIterator first, _InputIterator last, __false_type);
+        void _M_assign_dispatch(_InputIterator first, _InputIterator last, davis::__false_type);
         void _M_fill_assign(size_type n, const _Tp& val);
         _Node *_M_create_node(const value_type& x);
         void _M_fill_insert(iterator pos, size_type n, const _Tp& x);
         template <class _Integer>
-        void _M_insert_dispatch(iterator pos, _Integer n, _Integer x,__true_type);
+        void _M_insert_dispatch(iterator pos, _Integer n, _Integer x,davis::__true_type);
         template <class _InputIterator>
-        void _M_insert_dispatch(iterator pos,_InputIterator first, _InputIterator last,__false_type);
+        void _M_insert_dispatch(iterator pos,_InputIterator first, _InputIterator last,davis::__false_type);
         void transfer(iterator position, iterator first, iterator last);
 
     public:
@@ -125,6 +124,7 @@ namespace davis
              const allocator_type& alloc = allocator_type());
         list(const list<_Tp,_Alloc>& x);
         list(const list<_Tp,_Alloc>& x, const allocator_type& alloc);
+        
         // TODO move constructor
         //  list(list&& x);
         //  list(list&& x, const allocator_type& alloc);
@@ -235,7 +235,7 @@ namespace davis
         void splice(const_iterator position, list&& x,
                     const_iterator first, const_iterator last);
         // Observers
-        allocator_type get_allocator() const noexcept;
+        allocator_type get_allocator() const noexcept { return _M_allocator; }
     };
     
     template<class _Tp,class _Alloc>
@@ -629,13 +629,13 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void list<_Tp, _Alloc>::_M_assign_dispatch(_Integer n, _Integer val, __true_type)
+    void list<_Tp, _Alloc>::_M_assign_dispatch(_Integer n, _Integer val, davis::__true_type)
     {
         _M_fill_assign((size_type)__n, (_Tp)__val);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void list<_Tp, _Alloc>::_M_assign_dispatch(_InputIterator first, _InputIterator last, __false_type)
+    void list<_Tp, _Alloc>::_M_assign_dispatch(_InputIterator first, _InputIterator last, davis::__false_type)
     {
         iterator it1=begin();
         iterator it2=end();
@@ -686,13 +686,13 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _Integer n, _Integer x, __true_type)
+    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _Integer n, _Integer x, davis::__true_type)
     {
         _M_fill_insert(__pos, (size_type)__n, (_Tp)__x);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _InputIterator first, _InputIterator last, __false_type)
+    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _InputIterator first, _InputIterator last, davis::__false_type)
     {
         for (; first != last; ++fisrt)
         {
