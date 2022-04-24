@@ -60,6 +60,9 @@ namespace davis
         void _M_insert_aux(iterator position, const _Tp &x);
         void _M_insert_aux(iterator position);
         void _M_fill_insert(iterator pos, size_type n, const _Tp &x);
+        template <class _ForwardIterator>
+        iterator _M_allocate_and_copy(size_type n, _ForwardIterator first,
+                                      _ForwardIterator last);
 
     public:
         // constructors
@@ -100,7 +103,7 @@ namespace davis
         iterator end() noexcept {return _M_finish;}
         const_iterator end() const noexcept {return _M_finish;}
         const_iterator cbegin() const noexcept {return _M_start;}
-        const_iterator cend() const noexcept {return _M_end;}
+        const_iterator cend() const noexcept {return _M_finish;}
 
         // TODO reverse 
         // rbegin
@@ -168,7 +171,7 @@ namespace davis
     };
 
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::vector(const allocator_type &alloc = allocator_type())
+    vector<_Tp, _Alloc>::vector(const allocator_type &alloc)
         : _M_start(0), _M_finish(0), _M_end_of_storage(0), _M_allocator(alloc) {}
 
     template <class _Tp, class _Alloc>
@@ -178,20 +181,22 @@ namespace davis
         _M_start=_M_allocate(n);
         _M_finish=_M_start;
         _M_end_of_storage=_M_start+n;
-    }
-    template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::vector(size_type n, const value_type &val,
-                                const allocator_type& alloc = allocator_type())
-    {
-        // TODO
-    }
-    template <class _Tp, class _Alloc>
-    template <class _InputIterator>
-    vector<_Tp, _Alloc>::vector(_InputIterator first, _InputIterator last,
-                                const allocator_type& alloc = allocator_type())
-    {
-        //TODO
-    }
+    } 
+    // TODO
+    // template <class _Tp, class _Alloc>
+    // vector<_Tp, _Alloc>::vector(size_type n, const value_type &val,
+    //                             const allocator_type& alloc = allocator_type())
+    // {
+    //    
+    // }
+    //TODO
+    // template <class _Tp, class _Alloc>
+    // template <class _InputIterator>
+    // vector<_Tp, _Alloc>::vector(_InputIterator first, _InputIterator last,
+    //                             const allocator_type& alloc = allocator_type())
+    // {
+    //     
+    // }
     
     template <class _Tp, class _Alloc>
     vector<_Tp,_Alloc>::~vector()
@@ -240,49 +245,49 @@ namespace davis
     {
         if(capacity()>size())
         {
-            const size_type size = size();
-            iterator tmp = _M_allocate_and_copy(size, _M_start, _M_finish);
+            const size_type old_size = size();
+            iterator tmp = _M_allocate_and_copy(old_size, _M_start, _M_finish);
             davis::destroy(_M_start, _M_finish);
             _M_deallocate(_M_start, _M_end_of_storage - _M_start);
             _M_start = tmp;
-            _M_finish = _M_start + size;
+            _M_finish = _M_start + old_size;
             _M_end_of_storage = _M_finish;
         }
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::reference 
+    typename vector<_Tp, _Alloc>::reference 
         vector<_Tp, _Alloc>::operator[](size_type n)
     {
         return *(begin() + n);
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::const_reference 
+    typename vector<_Tp, _Alloc>::const_reference 
         vector<_Tp, _Alloc>::operator[](size_type n) const
     {
         return *(begin() + n);
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::reference 
+    typename vector<_Tp, _Alloc>::reference 
         vector<_Tp, _Alloc>::at(size_type n)
     {
         _M_range_check(n);
         return (*this)[n];
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::const_reference 
+    typename vector<_Tp, _Alloc>::const_reference 
         vector<_Tp, _Alloc>::at(size_type n) const
     {
         _M_range_check(n);
         return (*this)[n];
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::value_type *
+    typename vector<_Tp, _Alloc>::value_type *
         vector<_Tp, _Alloc>::data() noexcept
     {
         return static_cast<value_type*>(begin());
     }
     template <class _Tp, class _Alloc>
-    const vector<_Tp, _Alloc>::value_type *
+    const typename vector<_Tp, _Alloc>::value_type *
         vector<_Tp, _Alloc>::data() const noexcept
     {
         return static_cast<value_type *>(begin());
@@ -332,7 +337,7 @@ namespace davis
         davis::destroy(_M_finish);
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::iterator 
+    typename vector<_Tp, _Alloc>::iterator 
         vector<_Tp, _Alloc>::insert(const_iterator position, const value_type &val)
     {
         size_type n = position - begin();
@@ -348,21 +353,21 @@ namespace davis
         return begin() + n;
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::iterator 
+    typename vector<_Tp, _Alloc>::iterator 
         vector<_Tp, _Alloc>::insert(const_iterator position, size_type n, const value_type &val)
     {
         _M_fill_insert(position,n,val);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    vector<_Tp, _Alloc>::iterator 
+    typename vector<_Tp, _Alloc>::iterator 
         vector<_Tp, _Alloc>::insert(const_iterator position, _InputIterator first, _InputIterator last)
     {
         typedef typename davis::_Is_integer<_InputIterator>::_Integral _Integral;
         _M_insert_dispatch(position, first, last, _Integral());
     }
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::iterator 
+    typename vector<_Tp, _Alloc>::iterator 
         vector<_Tp, _Alloc>::insert(const_iterator position, value_type&& val)
     {
         // TODO
@@ -382,7 +387,7 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class... Args>
-    vector<_Tp, _Alloc>::iterator
+    typename vector<_Tp, _Alloc>::iterator
         vector<_Tp, _Alloc>::emplace(const_iterator position, Args &&...args)
     {
         // TODO
@@ -395,9 +400,9 @@ namespace davis
     }
 
     template <class _Tp, class _Alloc>
-    vector<_Tp, _Alloc>::iterator vector<_Tp, _Alloc>::_M_allocate(size_type n)
+    typename vector<_Tp, _Alloc>::iterator vector<_Tp, _Alloc>::_M_allocate(size_type n)
     {
-        return _M_allocator.allocate(__n);
+        return _M_allocator.allocate(n);
     }
     template <class _Tp, class _Alloc>
     void vector<_Tp, _Alloc>::_M_deallocate(iterator p, size_type n)
@@ -406,7 +411,7 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class _ForwardIterator>
-    vector<_Tp, _Alloc>::iterator
+    typename vector<_Tp, _Alloc>::iterator
         vector<_Tp, _Alloc>::_M_allocate_and_copy(size_type n, _ForwardIterator fisrt, _ForwardIterator last)
     {
         iterator result = _M_allocate(n);
@@ -435,18 +440,18 @@ namespace davis
         if (n > capacity())
         {
             vector<_Tp, _Alloc> tmp(n,val, get_allocator());
-            __tmp.swap(*this);
+            tmp.swap(*this);
         }
         else if (n > size())
         {
             //TODO std::fill
             std::fill(begin(), end(), val);
             
-            _M_finish = davis::uninitialized_fill_n(_M_finish, __n - size(), __val);
+            _M_finish = davis::uninitialized_fill_n(_M_finish, n - size(), val);
         }
         else
             //TODO std::fill_n
-            erase(std::fill_n(begin(), __n, __val), end());
+            erase(std::fill_n(begin(), n, val), end());
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
@@ -481,8 +486,8 @@ namespace davis
             iterator tmp = _M_allocate_and_copy(len, first, last);
             destroy(_M_start, _M_finish);
             _M_deallocate(_M_start, _M_end_of_storage - _M_start);
-            _M_start = __tmp;
-            _M_end_of_storage = _M_finish = _M_start + __len;
+            _M_start = tmp;
+            _M_end_of_storage = _M_finish = _M_start + len;
         }
         else if (size() >= len)
         {
@@ -527,12 +532,12 @@ namespace davis
                 new_finish = davis::uninitialized_copy(position, _M_finish, new_finish);
             }
             catch(...){
-                // TODO std::destroy
-                std::destroy(new_start, new_finish);
+                
+                davis::destroy(new_start, new_finish);
                 _M_deallocate(new_start, len);
             }
-            // TODO std::destroy
-            std::destroy(begin(), end());
+            
+            davis::destroy(begin(), end());
             _M_deallocate(_M_start, _M_end_of_storage - _M_start);
             _M_start = new_start;
             _M_finish = new_finish;
@@ -552,11 +557,11 @@ namespace davis
             if (size_type(_M_end_of_storage - _M_finish) >= n)
             {
                 _Tp x_copy = x;
-                const size_type elems_after = _M_finish - __position;
+                const size_type elems_after = _M_finish - position;
                 iterator old_finish = _M_finish;
                 if (elems_after > n)
                 {
-                    davis::uninitialized_copy(_M_finish - __n, _M_finish, _M_finish);
+                    davis::uninitialized_copy(_M_finish - n, _M_finish, _M_finish);
                     _M_finish += n;   
                     //TODO std::copy_backward
                     std::copy_backward(position, old_finish - n, old_finish); 
@@ -575,7 +580,7 @@ namespace davis
             else
             {
                 const size_type old_size = size();
-                const size_type len = old_size + max(old_size, n);
+                const size_type len = old_size + std::max(old_size, n);
                 iterator new_start = _M_allocate(len);
                 iterator new_finish = new_start;
                 try
@@ -586,11 +591,10 @@ namespace davis
                 }
                 catch(...)
                 {
-                    //TODO std::destroy
-                    std::destroy(new_start, new_finish)
+                    davis::destroy(new_start, new_finish);
                     _M_deallocate(new_start, len);
                 }
-                std::destroy(_M_start, _M_finish);
+                davis::destroy(_M_start, _M_finish);
                 _M_deallocate(_M_start, _M_end_of_storage - _M_start);
                 _M_start = new_start;
                 _M_finish = new_finish;
