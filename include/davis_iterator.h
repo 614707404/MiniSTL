@@ -109,7 +109,7 @@ namespace davis
     distance(_InputIterator __first, _InputIterator __last)
     {
         typename iterator_traits<_InputIterator>::iterator_category category;
-        return __distance(__first, __last, category());
+        return __distance(__first, __last, category);
     }
 
     template <class _InputIterator, class _Distance>

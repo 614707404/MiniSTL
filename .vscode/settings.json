@@ -44,7 +44,20 @@
         "streambuf": "cpp",
         "typeinfo": "cpp",
         "cstring": "cpp",
-        "ctime": "cpp"
+        "ctime": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "unordered_set": "cpp",
+        "any": "cpp",
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "map": "cpp",
+        "ratio": "cpp",
+        "set": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp",
+        "variant": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "cmake.configureOnOpen": true

@@ -3,6 +3,8 @@
 #include "davis_iterator.h"
 #include "davis_type_traits.h"
 #include "davis_construct.h"
+#include "davis_allocate.h"
+#include "davis_uninitialized.h"
 namespace davis
 {
     inline size_t __deque_buf_size(size_t size)
@@ -148,7 +150,7 @@ namespace davis
     }
 
     template <class _Tp, class _Alloc = davis::allocator<_Tp>>
-    class davis_deque
+    class deque
     {
     // Member types
     public:
@@ -175,14 +177,16 @@ namespace davis
         _Map_pointer _M_map;
         size_t _M_map_size;
         allocator_type _M_allocator;
-
+        davis::allocator<_Tp*> _M_map_allocator;
         // Member functions
     protected:
         enum {  _S_initial_map_size = 8 };
         pointer _M_allocate_node(){ return _M_allocator.allocate(__deque_buf_size(sizeof(_Tp)));}
         void _M_deallocate_node(pointer p) { _M_allocator.deallocate(p, __deque_buf_size(sizeof(_Tp)));}
-        _Map_pointer _M_allocate_map(size_type n){ return _M_allocator.allocate(n);}
-        void _M_deallocate_map(_Map_pointer p, size_type n){  _M_allocator.deallocate(p, n);}
+
+        _Map_pointer _M_allocate_map(size_type n) { return _M_map_allocator.allocate(n); }
+        void _M_deallocate_map(_Map_pointer p, size_type n) { _M_map_allocator.deallocate(p, n); }
+
         void _M_initialize_map(size_type);
         void _M_create_nodes(_Map_pointer nstart, _Map_pointer nfinish);
         void _M_destroy_nodes(_Map_pointer nstart, _Map_pointer nfinish);
@@ -210,6 +214,11 @@ namespace davis
         iterator _M_insert_aux(iterator pos, const value_type &x);
         iterator _M_insert_aux(iterator pos);
         void _M_insert_aux(iterator pos, size_type n, const value_type &x);
+        template <class _ForwardIterator>
+        void _M_insert_aux(iterator __pos,
+                           _ForwardIterator __first,
+                           _ForwardIterator __last,
+                           size_type __n);
         template <class _Integer>
         void _M_insert_dispatch(iterator pos, _Integer n, _Integer x,
                                 davis::__true_type);
@@ -244,7 +253,7 @@ namespace davis
         void _M_fill_insert(iterator pos, size_type n, const value_type &x);
 
     public:
-        explicit deque (const allocator_type& alloc = allocator_type());
+        explicit deque(const allocator_type& alloc = allocator_type());
         explicit deque(size_type n);
         deque(size_type n, const value_type& val,const allocator_type& alloc = allocator_type());
         template <class _InputIterator>
@@ -253,7 +262,7 @@ namespace davis
         deque(const deque& x, const allocator_type& alloc);
     
         ~deque();
-        deque& operator=(const deque &x);
+        deque& operator=(deque &x);
         
         // Iterators
         iterator begin() noexcept { return _M_start; }
@@ -280,8 +289,8 @@ namespace davis
         const_reference at(size_type n) const { _M_range_check(n); return (*this)[difference_type(n)]; }
         reference front() { return *begin(); }
         const_reference front() const { return *begin(); }
-        reference back() { return *end(); }
-        const_reference back() const { return *end(); }
+        reference back() { return *(end()-1); }
+        const_reference back() const { return *(end()-1); }
 
         // Modifiers
         template <class _InputIterator>
@@ -291,12 +300,20 @@ namespace davis
         void push_front(const value_type& val);
         void pop_back();
         void pop_front();
-        iterator insert(const_iterator position, const value_type& val);
-        iterator insert(const_iterator position, size_type n, const value_type& val);
+        iterator insert(iterator position, const value_type& val);
+        iterator insert(iterator position, size_type n, const value_type& val);
         template <class _InputIterator>
-        iterator insert(const_iterator position, _InputIterator first, _InputIterator last);
-        iterator erase(const_iterator position);
-        iterator erase(const_iterator first, const_iterator last);
+        iterator insert(iterator position, _InputIterator first, _InputIterator last);
+        template <class _InputIterator>
+        void insert(iterator __pos, _InputIterator __first, _InputIterator __last,
+                    input_iterator_tag);
+
+        template <class _ForwardIterator>
+        void insert(iterator __pos,
+                    _ForwardIterator __first, _ForwardIterator __last,
+                    forward_iterator_tag);
+        iterator erase(iterator position);
+        iterator erase(iterator first, iterator last);
         void swap(deque& x);
         void clear() noexcept;
 
@@ -304,77 +321,76 @@ namespace davis
         allocator_type get_allocator() const noexcept { return _M_allocator; }
 
         // TODO reverse_iterator
-        reverse_iterator rbegin() noexcept;
-        const_reverse_iterator rbegin() const noexcept;
-        reverse_iterator rend() noexcept;
-        const_reverse_iterator rend() const noexcept;
-        const_reverse_iterator crbegin() const noexcept;
-        const_reverse_iterator crend() const noexcept;
+        // reverse_iterator rbegin() noexcept;
+        // const_reverse_iterator rbegin() const noexcept;
+        // reverse_iterator rend() noexcept;
+        // const_reverse_iterator rend() const noexcept;
+        // const_reverse_iterator crbegin() const noexcept;
+        // const_reverse_iterator crend() const noexcept;
         // TODO &&
-        deque(deque &&x);
-        deque(deque &&x, const allocator_type &alloc);
-        deque &operator=(deque &&x);
-        template <class... _Args>
-        iterator emplace(const_iterator position, _Args &&...args);
-        template <class... _Args>
-        void emplace_front(_Args &&...args);
-        template <class... _Args>
-        void emplace_back(_Args &&...args);
-        iterator insert(const_iterator position, value_type &&val);
-        void push_front(value_type &&val);
-        void push_back(value_type &&val);
+        // deque(deque &&x);
+        // deque(deque &&x, const allocator_type &alloc);
+        // deque &operator=(deque &&x);
+        // template <class... _Args>
+        // iterator emplace(const_iterator position, _Args &&...args);
+        // template <class... _Args>
+        // void emplace_front(_Args &&...args);
+        // template <class... _Args>
+        // void emplace_back(_Args &&...args);
+        // iterator insert(const_iterator position, value_type &&val);
+        // void push_front(value_type &&val);
+        // void push_back(value_type &&val);
         // TODO initializer_list
-        deque(initializer_list<value_type> il, const allocator_type &alloc = allocator_type());
-        deque &operator=(initializer_list<value_type> il);
-        iterator insert(const_iterator position, initializer_list<value_type> il);
-        void assign(initializer_list<value_type> il);
+        // deque(initializer_list<value_type> il, const allocator_type &alloc = allocator_type());
+        // deque &operator=(initializer_list<value_type> il);
+        // iterator insert(const_iterator position, initializer_list<value_type> il);
+        // void assign(initializer_list<value_type> il);
     };
 
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::deque(const allocator_type &alloc = allocator_type()) 
+    deque<_Tp, _Alloc>::deque(const allocator_type &alloc) 
         : _M_map(0), _M_map_size(0), _M_start(), _M_finish(), _M_allocator(alloc)
     {
         _M_initialize_map(0);
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::deque(size_type n)
+    deque<_Tp, _Alloc>::deque(size_type n)
         : _M_map(0), _M_map_size(0), _M_start(), _M_finish(), _M_allocator(allocator_type())
     {
         _M_initialize_map(n);
         _M_fill_initialize(value_type());
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::deque(size_type n, const value_type &val, const allocator_type &alloc = allocator_type())
-        : _M_map(0), _M_map_size(0), _M_start(), _M_finish(), _M_allocator(allocator_type())
+    deque<_Tp, _Alloc>::deque(size_type __n, const value_type &__val, const allocator_type &__alloc)
+        : _M_map(0), _M_map_size(0), _M_start(), _M_finish(), _M_allocator(__alloc)
     {
-        _M_initialize_map(n);
-        _M_fill_initialize(value);
+        _M_initialize_map(__n);
+        _M_fill_initialize(__val);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    deque<_TP, _Alloc>::deque(_InputIterator first, _InputIterator last, const allocator_type &alloc = allocator_type())
+    deque<_Tp, _Alloc>::deque(_InputIterator first, _InputIterator last, const allocator_type &alloc)
         : _M_map(0), _M_map_size(0), _M_start(), _M_finish(), _M_allocator(alloc)
     {
-        typedef typename davis::_Is_integer<_Tp>::_Integral _Integral;
-        _M_initialize_map(0);
+        typedef typename davis::_Is_integer<_InputIterator>::_Integral _Integral;
         _M_initialize_dispatch(first, last, _Integral());
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::deque(const deque &x)
+    deque<_Tp, _Alloc>::deque(const deque& x)
         : _M_map(0), _M_map_size(0), _M_start(), _M_finish(), _M_allocator(x.get_allocator())
     {
         _M_initialize_map(x.size());
-        uninitialized_copy(x.begin(), x.end(), _M_start);
+        davis::uninitialized_copy(x.begin(), x.end(), _M_start);
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::deque(const deque &x, const allocator_type &alloc)
+    deque<_Tp, _Alloc>::deque(const deque& x, const allocator_type& alloc)
         : _M_map(0), _M_map_size(0), _M_start(), _M_finish(), _M_allocator(alloc)
     {
         _M_initialize_map(x.size());
-        uninitialized_copy(x.begin(), x.end(), _M_start);
+        davis::uninitialized_copy(x.begin(), x.end(), _M_start);
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::~deque()
+    deque<_Tp, _Alloc>::~deque()
     {   
         
         davis::destroy(_M_start, _M_finish);
@@ -386,31 +402,32 @@ namespace davis
         
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::deque &operator=(const deque<_TP, _Alloc>& x)
+    deque<_Tp, _Alloc>&
+        deque<_Tp, _Alloc>::operator=(deque<_Tp, _Alloc> &x)
     {
         if(&x!=this)
         {
             size_type len=size();
             if(len>=x.size())
             {
-                erase(copy(x.begin(),x.end(),_M_start),_M_finish);
+                erase(std::copy(x.begin(),x.end(),_M_start),_M_finish);
             }
             else
             {
-                const_iterator mid = x.begin() + difference_type(len);
-                copy(x.begin(), mid, _M_start);
+                iterator mid = x.begin() + difference_type(len);
+                std::copy(x.begin(), mid, _M_start);
                 insert(_M_finish, mid, x.end());
             }
         }
         return *this;
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::resize(size_type n)
+    void deque<_Tp, _Alloc>::resize(size_type n)
     {
         resize(n,_Tp());
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::resize(size_type n, const value_type &val)
+    void deque<_Tp, _Alloc>::resize(size_type n, const value_type &val)
     {
         size_type len=size();
         if(len>=n)
@@ -419,11 +436,11 @@ namespace davis
         }
         else
         {
-            insert(end(),n-len,_Tp());
+            insert(end(),n-len,val);
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::shrink_to_fit()
+    void deque<_Tp, _Alloc>::shrink_to_fit()
     {
         // TODO shrink_to_fit
     }
@@ -431,18 +448,18 @@ namespace davis
     // Modifiers
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void deque<_TP, _Alloc>::assign(_InputIterator first, _InputIterator last)
+    void deque<_Tp, _Alloc>::assign(_InputIterator first, _InputIterator last)
     {
-        typedef typename davis::_Is_integer<_Tp>::_Integral _Integral;
+        typedef typename davis::_Is_integer<_InputIterator>::_Integral _Integral;
         _M_assign_dispatch(first, last, _Integral());
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::assign(size_type n, const value_type &val)
+    void deque<_Tp, _Alloc>::assign(size_type n, const value_type &val)
     {
         _M_fill_assign(n, val);
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::push_back(const value_type &val)
+    void deque<_Tp, _Alloc>::push_back(const value_type &val)
     {
         if (_M_finish._M_cur != _M_finish._M_last - 1)
         {
@@ -453,7 +470,7 @@ namespace davis
             _M_push_back_aux(val);
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::push_front(const value_type &val)
+    void deque<_Tp, _Alloc>::push_front(const value_type &val)
     {
         if (_M_start._M_cur != _M_start._M_first)
         {
@@ -464,7 +481,7 @@ namespace davis
             _M_push_front_aux(val);
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::pop_back()
+    void deque<_Tp, _Alloc>::pop_back()
     {
         if (_M_finish._M_cur != _M_finish._M_first)
         {
@@ -475,7 +492,7 @@ namespace davis
             _M_pop_back_aux();
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::pop_front()
+    void deque<_Tp, _Alloc>::pop_front()
     {
         if (_M_start._M_cur != _M_start._M_last - 1)
         {
@@ -486,7 +503,8 @@ namespace davis
             _M_pop_front_aux();
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::iterator deque<_TP, _Alloc>::insert(const_iterator position, const value_type &val)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::insert(iterator position, const value_type &val)
     {
         if (position._M_cur == _M_start._M_cur)
         {
@@ -506,37 +524,43 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::iterator deque<_TP, _Alloc>::insert(const_iterator position, size_type n, const value_type &val)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::insert(iterator position, size_type n, const value_type &val)
     {
         _M_fill_insert(position, n, val);
+        return position;
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    deque<_TP, _Alloc>::iterator deque<_TP, _Alloc>::insert(const_iterator position, _InputIterator first, _InputIterator last)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::insert(iterator position, _InputIterator first, _InputIterator last)
     {
-        typedef typename davis::_Is_integer<_Tp>::_Integral _Integral;
+        typedef typename davis::_Is_integer<_InputIterator>::_Integral _Integral;
         _M_insert_dispatch(position, first, last, _Integral());
+        return position;
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::iterator deque<_TP, _Alloc>::erase(const_iterator position)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::erase(iterator position)
     {
         iterator next = position;
         ++next;
         difference_type index = position - _M_start;
         if (size_type(index) < (this->size() >> 1))
         {
-            copy_backward(_M_start, position, next);
+            std::copy_backward(_M_start, position, next);
             pop_front();
         }
         else
         {
-            copy(next, _M_finish, position);
+            std::copy(next, _M_finish, position);
             pop_back();
         }
         return _M_start + index;
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::iterator deque<_TP, _Alloc>::erase(const_iterator first, const_iterator last)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::erase(iterator first, iterator last)
     {
         if (first == _M_start && last == _M_finish)
         {
@@ -549,7 +573,7 @@ namespace davis
             difference_type elems_before = first - _M_start;
             if (elems_before < difference_type((this->size() - n) / 2))
             {
-                copy_backward(_M_start, first, last);
+                std::copy_backward(_M_start, first, last);
                 iterator new_start = _M_start + n;
                 davis::destroy(_M_start, new_start);
                 _M_destroy_nodes(new_start._M_node, _M_start._M_node);
@@ -557,7 +581,7 @@ namespace davis
             }
             else
             {
-                copy(last, _M_finish, first);
+                std::copy(last, _M_finish, first);
                 iterator new_finish = _M_finish - n;
                 davis::destroy(new_finish, _M_finish);
                 _M_destroy_nodes(new_finish._M_node + 1, _M_finish._M_node + 1);
@@ -567,7 +591,7 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::swap(deque &x)
+    void deque<_Tp, _Alloc>::swap(deque &x)
     {
         //TODO std::swap
         std::swap(_M_start, x._M_start);
@@ -576,7 +600,7 @@ namespace davis
         std::swap(_M_map_size, x._M_map_size);
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::clear() noexcept
+    void deque<_Tp, _Alloc>::clear() noexcept
     {
         for (_Map_pointer node = _M_start._M_node + 1;
              node < _M_finish._M_node;
@@ -598,10 +622,10 @@ namespace davis
         _M_finish = _M_start;
     }
     template <class _Tp, class _Alloc> // int
-    void deque<_TP, _Alloc>::_M_initialize_map(size_type num_elements) //500 
+    void deque<_Tp, _Alloc>::_M_initialize_map(size_type num_elements) //500 
     {
         size_type num_nodes = num_elements / __deque_buf_size(sizeof(_Tp)) + 1; //4
-        _M_map_size = max((size_type)_S_initial_map_size, num_nodes + 2); //8
+        _M_map_size = std::max((size_type)_S_initial_map_size, num_nodes + 2); //8
         _M_map = _M_allocate_map(_M_map_size); 
 
         _Tp** nstart = _M_map + (_M_map_size - num_nodes) / 2; //0+2
@@ -623,7 +647,7 @@ namespace davis
         _M_finish._M_cur = _M_finish._M_first + num_elements % __deque_buf_size(sizeof(_Tp));
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_create_nodes(_Map_pointer nstart, _Map_pointer nfinish)
+    void deque<_Tp, _Alloc>::_M_create_nodes(_Map_pointer nstart, _Map_pointer nfinish)
     {
         _Tp** cur;
         try
@@ -637,47 +661,47 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_destroy_nodes(_Map_pointer nstart, _Map_pointer nfinish)
+    void deque<_Tp, _Alloc>::_M_destroy_nodes(_Map_pointer nstart, _Map_pointer nfinish)
     {
         for (_Tp **n = nstart; n < nfinish; ++n)
             _M_deallocate_node(*n);
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_range_check(size_type n) const
+    void deque<_Tp, _Alloc>::_M_range_check(size_type n) const
     {
         if (n >= this->size())
             std::range_error("deque");
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_fill_initialize(const value_type & value)
+    void deque<_Tp, _Alloc>::_M_fill_initialize(const value_type& value)
     {
         _Map_pointer cur;
         try
         {
             for (cur = _M_start._M_node; cur < _M_finish._M_node; ++cur)
-                uninitialized_fill(*cur, *cur + _S_buffer_size(), value);
-            uninitialized_fill(_M_finish._M_first, _M_finish._M_cur, value);
+                davis::uninitialized_fill(*cur, *cur + _S_buffer_size(), value);
+            davis::uninitialized_fill(_M_finish._M_first, _M_finish._M_cur, value);
         }
         catch(...)
         {
-            destroy(_M_start, iterator(*cur, cur));
+            davis::destroy(_M_start, iterator(*cur, cur));
         }
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void deque<_TP, _Alloc>::_M_initialize_dispatch(_Integer n, _Integer x, davis::__true_type)
+    void deque<_Tp, _Alloc>::_M_initialize_dispatch(_Integer n, _Integer x, davis::__true_type)
     {
         _M_initialize_map(n);
         _M_fill_initialize(x);
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void deque<_TP, _Alloc>::_M_initialize_dispatch(_Integer first, _Integer last, davis::__false_type)
+    void deque<_Tp, _Alloc>::_M_initialize_dispatch(_Integer first, _Integer last, davis::__false_type)
     {
         _M_range_initialize(first, last, davis::iterator_category(first));
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_fill_assign(size_type n, const _Tp & val)
+    void deque<_Tp, _Alloc>::_M_fill_assign(size_type n, const _Tp & val)
     {
         if (n > size())
         {
@@ -688,24 +712,24 @@ namespace davis
         else
         {
             erase(begin() + n, end());
-            fill(begin(), end(), val);
+            std::fill(begin(), end(), val);
         }
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void deque<_TP, _Alloc>::_M_assign_dispatch(_Integer n, _Integer val, davis::__true_type)
+    void deque<_Tp, _Alloc>::_M_assign_dispatch(_Integer n, _Integer val, davis::__true_type)
     {
         _M_fill_assign((size_type)n, (_Tp)val);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void deque<_TP, _Alloc>::_M_assign_dispatch(_InputIterator first, _InputIterator last, davis::__false_type)
+    void deque<_Tp, _Alloc>::_M_assign_dispatch(_InputIterator first, _InputIterator last, davis::__false_type)
     {
         _M_assign_aux(first, last, davis::iterator_category(first));
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void deque<_TP, _Alloc>::_M_assign_aux(_InputIterator first, _InputIterator last, davis::input_iterator_tag)
+    void deque<_Tp, _Alloc>::_M_assign_aux(_InputIterator first, _InputIterator last, davis::input_iterator_tag)
     {
         iterator cur = begin();
         for (; first != last && cur != end(); ++cur, ++first)
@@ -717,10 +741,9 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class _ForwardIterator>
-    void deque<_TP, _Alloc>::_M_assign_aux(_ForwardIterator first, _ForwardIterator last, davis::forward_iterator_tag)
+    void deque<_Tp, _Alloc>::_M_assign_aux(_ForwardIterator first, _ForwardIterator last, davis::forward_iterator_tag)
     {
-        size_type len = 0;
-        davis::distance(first, last, len);
+        size_type len = davis::distance(first, last);
         if (len > size())
         {
             _ForwardIterator mid = first;
@@ -730,10 +753,10 @@ namespace davis
             insert(end(), mid, last);
         }
         else
-            erase(copy(first, last, begin()), end());
+            erase(std::copy(first, last, begin()), end());
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_push_back_aux(const value_type & val)
+    void deque<_Tp, _Alloc>::_M_push_back_aux(const value_type & val)
     {
         value_type v_copy = val;
         _M_reserve_map_at_back();
@@ -749,12 +772,12 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_push_back_aux();
+    void deque<_Tp, _Alloc>::_M_push_back_aux()
     {
         _M_push_back_aux(value_type());
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_push_front_aux(const value_type & val)
+    void deque<_Tp, _Alloc>::_M_push_front_aux(const value_type & val)
     {
         value_type v_copy = val;
         _M_reserve_map_at_front();
@@ -772,7 +795,7 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_push_front_aux()
+    void deque<_Tp, _Alloc>::_M_push_front_aux()
     {
         _M_reserve_map_at_front();
         *(_M_start._M_node - 1) = _M_allocate_node();
@@ -789,7 +812,7 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_pop_back_aux()
+    void deque<_Tp, _Alloc>::_M_pop_back_aux()
     {
         _M_deallocate_node(_M_finish._M_first);
         _M_finish._M_set_node(_M_finish._M_node - 1);
@@ -797,7 +820,7 @@ namespace davis
         davis::destroy(_M_finish._M_cur);
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_pop_front_aux()
+    void deque<_Tp, _Alloc>::_M_pop_front_aux()
     {
         davis::destroy(_M_start._M_cur);
         _M_deallocate_node(_M_start._M_first);
@@ -805,7 +828,8 @@ namespace davis
         _M_start._M_cur = _M_start._M_first;
     }
     template <class _Tp, class _Alloc>
-    iterator deque<_TP, _Alloc>::_M_insert_aux(iterator pos, const value_type &x)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::_M_insert_aux(iterator pos, const value_type &x)
     {
         difference_type index = pos - _M_start;
         value_type x_copy = x;
@@ -830,13 +854,13 @@ namespace davis
             iterator back2 = back1;
             --back2;
             pos = _M_start + index;
-            copy_backward(pos, back2, back1);
+            std::copy_backward(pos, back2, back1);
         }
         *pos = x_copy;
         return pos;
     }
     template <class _Tp, class _Alloc>
-    iterator deque<_TP, _Alloc>::_M_insert_aux(iterator pos)
+    typename deque<_Tp, _Alloc>::iterator deque<_Tp, _Alloc>::_M_insert_aux(iterator pos)
     {
         difference_type index = pos - _M_start;
         if (index < size() / 2)
@@ -866,7 +890,7 @@ namespace davis
     }
     //TODO std
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_insert_aux(iterator pos, size_type n, const value_type &x)
+    void deque<_Tp, _Alloc>::_M_insert_aux(iterator pos, size_type n, const value_type &x)
     {
         const difference_type elems_before = pos - _M_start;
         size_type length = this->size();
@@ -888,10 +912,10 @@ namespace davis
                 }
                 else
                 {
-                    std::__uninitialized_copy_fill(_M_start, pos, new_start,
+                    davis::__uninitialized_copy_fill(_M_start, pos, new_start,
                                               _M_start, x_copy);
                     _M_start = new_start;
-                    fill(old_start, pos, x_copy);
+                    std::fill(old_start, pos, x_copy);
                 }
             }
             catch(...){
@@ -910,14 +934,14 @@ namespace davis
                 if (elems_after > difference_type(n))
                 {
                     iterator finish_n = _M_finish - difference_type(n);
-                    davis::uninitialized_copy(finish_n, _M_finish, _M_finish);
+                    std::uninitialized_copy(finish_n, _M_finish, _M_finish);
                     _M_finish = new_finish;
                     std::copy_backward(pos, finish_n, old_finish);
                     std::fill(pos, pos + difference_type(n), x_copy);
                 }
                 else
                 {
-                    std::__uninitialized_fill_copy(_M_finish, pos + difference_type(n),
+                    davis::__uninitialized_fill_copy(_M_finish, pos + difference_type(n),
                                               x_copy, pos, _M_finish);
                     _M_finish = new_finish;
                     std::fill(pos, old_finish, x_copy);
@@ -926,20 +950,90 @@ namespace davis
             catch(...)
             {
                 _M_destroy_nodes(_M_finish._M_node + 1,
-                                 new_finish._M_node + 1)
+                                 new_finish._M_node + 1);
+            }
+        }
+    }
+    template <class _Tp, class _Alloc>
+    template <class _ForwardIterator>
+    void deque<_Tp, _Alloc>::_M_insert_aux(iterator __pos,
+                                           _ForwardIterator __first,
+                                           _ForwardIterator __last,
+                                           size_type __n)
+    {
+        const difference_type __elemsbefore = __pos - _M_start;
+        size_type __length = size();
+        if (__elemsbefore < __length / 2)
+        {
+            iterator __new_start = _M_reserve_elements_at_front(__n);
+            iterator __old_start = _M_start;
+            __pos = _M_start + __elemsbefore;
+            try
+            {
+                if (__elemsbefore >= difference_type(__n))
+                {
+                    iterator __start_n = _M_start + difference_type(__n);
+                    davis::uninitialized_copy(_M_start, __start_n, __new_start);
+                    _M_start = __new_start;
+                    std::copy(__start_n, __pos, __old_start);
+                    std::copy(__first, __last, __pos - difference_type(__n));
+                }
+                else
+                {
+                    _ForwardIterator __mid = __first;
+                    davis::advance(__mid, difference_type(__n) - __elemsbefore);
+                    __uninitialized_copy_copy(_M_start, __pos, __first, __mid,
+                                              __new_start);
+                    _M_start = __new_start;
+                    std::copy(__mid, __last, __old_start);
+                }
+            }
+            catch(...){
+                _M_destroy_nodes(__new_start._M_node, _M_start._M_node);
+            }
+        }
+        else
+        {
+            iterator __new_finish = _M_reserve_elements_at_back(__n);
+            iterator __old_finish = _M_finish;
+            const difference_type __elemsafter =
+                difference_type(__length) - __elemsbefore;
+            __pos = _M_finish - __elemsafter;
+            try
+            {
+                if (__elemsafter > difference_type(__n))
+                {
+                    iterator __finish_n = _M_finish - difference_type(__n);
+                    davis::uninitialized_copy(__finish_n, _M_finish, _M_finish);
+                    _M_finish = __new_finish;
+                    std::copy_backward(__pos, __finish_n, __old_finish);
+                    std::copy(__first, __last, __pos);
+                }
+                else
+                {
+                    _ForwardIterator __mid = __first;
+                    davis::advance(__mid, __elemsafter);
+                    davis::__uninitialized_copy_copy(__mid, __last, __pos, _M_finish, _M_finish);
+                    _M_finish = __new_finish;
+                    std::copy(__first, __mid, __pos);
+                }
+            }
+            catch(...){
+                _M_destroy_nodes(_M_finish._M_node + 1,
+                                  __new_finish._M_node + 1);
             }
         }
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void deque<_TP, _Alloc>::_M_insert_dispatch(iterator pos, _Integer n, _Integer x,
+    void deque<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _Integer n, _Integer x,
                                                 davis::__true_type)
     {
         _M_fill_insert(pos, (size_type)n, (value_type)x);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void deque<_TP, _Alloc>::_M_insert_dispatch(iterator pos,
+    void deque<_Tp, _Alloc>::_M_insert_dispatch(iterator pos,
                                                 _InputIterator first, _InputIterator last,
                                                 davis::__false_type)
     {
@@ -947,7 +1041,7 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void deque<_TP, _Alloc>::_M_range_initialize(_InputIterator first, _InputIterator last,
+    void deque<_Tp, _Alloc>::_M_range_initialize(_InputIterator first, _InputIterator last,
                                                  davis::input_iterator_tag)
     {
         _M_initialize_map(0);
@@ -963,11 +1057,10 @@ namespace davis
 
     template <class _Tp, class _Alloc>
     template <class _ForwardIterator>
-    void deque<_TP, _Alloc>::_M_range_initialize(_ForwardIterator first, _ForwardIterator last,
+    void deque<_Tp, _Alloc>::_M_range_initialize(_ForwardIterator first, _ForwardIterator last,
                                                  davis::forward_iterator_tag)
     {
-        size_type n = 0;
-        distance(first, last, n);
+        size_type n = davis::distance(first, last);
         _M_initialize_map(n);
 
         _Map_pointer cur_node;
@@ -990,9 +1083,9 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_new_elements_at_front(size_type new_elements)
+    void deque<_Tp, _Alloc>::_M_new_elements_at_front(size_type __new_elements)
     {
-        size_type new_nodes = (new_elems + _S_buffer_size() - 1) / _S_buffer_size();
+        size_type new_nodes = (__new_elements + _S_buffer_size() - 1) / _S_buffer_size();
         _M_reserve_map_at_front(new_nodes);
         size_type i;
         try
@@ -1008,9 +1101,9 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_new_elements_at_back(size_type new_elements)
+    void deque<_Tp, _Alloc>::_M_new_elements_at_back(size_type __new_elements)
     {
-        size_type new_nodes = (new_elems + _S_buffer_size() - 1) / _S_buffer_size();
+        size_type new_nodes = (__new_elements + _S_buffer_size() - 1) / _S_buffer_size();
         _M_reserve_map_at_back(new_nodes);
         size_type i;
         try
@@ -1026,7 +1119,7 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_reallocate_map(size_type nodes_to_add, bool add_at_front)
+    void deque<_Tp, _Alloc>::_M_reallocate_map(size_type nodes_to_add, bool add_at_front)
     {
         size_type old_num_nodes = _M_finish._M_node - _M_start._M_node + 1;
         size_type new_num_nodes = old_num_nodes + nodes_to_add;
@@ -1045,7 +1138,7 @@ namespace davis
         else
         {
             size_type new_map_size =
-                _M_map_size + max(_M_map_size, nodes_to_add) + 2;
+                _M_map_size + std::max(_M_map_size, nodes_to_add) + 2;
 
             _Map_pointer new_map = _M_allocate_map(new_map_size);
             new_nstart = new_map + (new_map_size - new_num_nodes) / 2 + (add_at_front ? nodes_to_add : 0);
@@ -1060,7 +1153,8 @@ namespace davis
         _M_finish._M_set_node(new_nstart + old_num_nodes - 1);
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::iterator deque<_TP, _Alloc>::_M_reserve_elements_at_front(size_type n)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::_M_reserve_elements_at_front(size_type n)
     {
         size_type vacancies = _M_start._M_cur - _M_start._M_first;
         if (n > vacancies)
@@ -1068,7 +1162,8 @@ namespace davis
         return _M_start - difference_type(n);
     }
     template <class _Tp, class _Alloc>
-    deque<_TP, _Alloc>::iterator deque<_TP, _Alloc>::_M_reserve_elements_at_back(size_type n)
+    typename deque<_Tp, _Alloc>::iterator 
+        deque<_Tp, _Alloc>::_M_reserve_elements_at_back(size_type n)
     {
         size_type vacancies = (_M_finish._M_last - _M_finish._M_cur) - 1;
         if (n > vacancies)
@@ -1076,7 +1171,7 @@ namespace davis
         return _M_finish + difference_type(n);
     }
     template <class _Tp, class _Alloc>
-    void deque<_TP, _Alloc>::_M_fill_insert(iterator pos, size_type n, const value_type &x)
+    void deque<_Tp, _Alloc>::_M_fill_insert(iterator pos, size_type n, const value_type &x)
     {
         if (pos._M_cur == _M_start._M_cur)
         {
@@ -1107,22 +1202,65 @@ namespace davis
         else
             _M_insert_aux(pos, n, x);
     }
-
+    template <class _Tp, class _Alloc>
+    template <class _InputIterator>
+    void deque<_Tp, _Alloc>::insert(iterator __pos, _InputIterator __first, _InputIterator __last,
+                                    davis::input_iterator_tag)
+    {
+        std::copy(__first, __last, std::inserter(*this, __pos));
+    }
+    template <class _Tp, class _Alloc>
+    template <class _ForwardIterator>
+    void deque<_Tp, _Alloc>::insert(iterator __pos,
+                                    _ForwardIterator __first, _ForwardIterator __last,
+                                    davis::forward_iterator_tag)
+    {
+        size_type __n = davis::distance(__first, __last);
+        if (__pos._M_cur == _M_start._M_cur)
+        {
+            iterator __new_start = _M_reserve_elements_at_front(__n);
+            try
+            {
+                davis::uninitialized_copy(__first, __last, __new_start);
+                _M_start = __new_start;
+            }
+            catch(...)
+            {
+                _M_destroy_nodes(__new_start._M_node, _M_start._M_node);
+            };
+        }
+        else if (__pos._M_cur == _M_finish._M_cur)
+        {
+            iterator __new_finish = _M_reserve_elements_at_back(__n);
+            try
+            {
+                davis::uninitialized_copy(__first, __last, _M_finish);
+                _M_finish = __new_finish;
+            }
+            catch(...)
+            {
+                _M_destroy_nodes(_M_finish._M_node + 1,
+                                 __new_finish._M_node + 1);
+            }
+        }
+        else
+            _M_insert_aux(__pos, __first, __last, __n);
+    }
     // Non-member function overloads
     template <class _Tp, class _Alloc>
     inline bool operator==(const deque<_Tp, _Alloc> &x,
                            const deque<_Tp, _Alloc> &y)
     {
         return x.size() == y.size() &&
-               equal(x.begin(), x.end(), y.begin());
+               std::equal(x.begin(), x.end(), y.begin());
     }
 
     template <class _Tp, class _Alloc>
     inline bool operator<(const deque<_Tp, _Alloc> &x,
                           const deque<_Tp, _Alloc> &y)
     {
-        return lexicographical_compare(x.begin(), x.end(),
-                                       y.begin(), y.end());
+        return std::lexicographical_compare(x.begin(), x.end(),
+                                            y.begin(), y.end());
     }
     template <class _Tp, class _Alloc>
     inline bool operator!=(const deque<_Tp, _Alloc> &x,

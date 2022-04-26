@@ -8,7 +8,7 @@
 namespace davis
 {
     template <class T>
-    inline T *_allocate(ptrdiff_t size, T *)
+    inline T* _allocate(ptrdiff_t size, T *)
     {
 
         std::set_new_handler(0);

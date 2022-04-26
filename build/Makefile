@@ -172,17 +172,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named vector_test
+# Target rules for targets named UniTest
 
 # Build rule for target.
-vector_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 vector_test
-.PHONY : vector_test
+UniTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 UniTest
+.PHONY : UniTest
 
 # fast build rule for target.
-vector_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/vector_test.dir/build.make CMakeFiles/vector_test.dir/build
-.PHONY : vector_test/fast
+UniTest/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/build
+.PHONY : UniTest/fast
 
 #=============================================================================
 # Target rules for targets named main
@@ -273,12 +273,36 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+test/deque_test.o: test/deque_test.cpp.o
+.PHONY : test/deque_test.o
+
+# target to build an object file
+test/deque_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/deque_test.cpp.o
+.PHONY : test/deque_test.cpp.o
+
+test/deque_test.i: test/deque_test.cpp.i
+.PHONY : test/deque_test.i
+
+# target to preprocess a source file
+test/deque_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/deque_test.cpp.i
+.PHONY : test/deque_test.cpp.i
+
+test/deque_test.s: test/deque_test.cpp.s
+.PHONY : test/deque_test.s
+
+# target to generate assembly for a file
+test/deque_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/deque_test.cpp.s
+.PHONY : test/deque_test.cpp.s
+
 test/vector_test.o: test/vector_test.cpp.o
 .PHONY : test/vector_test.o
 
 # target to build an object file
 test/vector_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/vector_test.dir/build.make CMakeFiles/vector_test.dir/test/vector_test.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/vector_test.cpp.o
 .PHONY : test/vector_test.cpp.o
 
 test/vector_test.i: test/vector_test.cpp.i
@@ -286,7 +310,7 @@ test/vector_test.i: test/vector_test.cpp.i
 
 # target to preprocess a source file
 test/vector_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/vector_test.dir/build.make CMakeFiles/vector_test.dir/test/vector_test.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/vector_test.cpp.i
 .PHONY : test/vector_test.cpp.i
 
 test/vector_test.s: test/vector_test.cpp.s
@@ -294,7 +318,7 @@ test/vector_test.s: test/vector_test.cpp.s
 
 # target to generate assembly for a file
 test/vector_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/vector_test.dir/build.make CMakeFiles/vector_test.dir/test/vector_test.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/vector_test.cpp.s
 .PHONY : test/vector_test.cpp.s
 
 # Help Target
@@ -310,15 +334,18 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... UniTest"
 	@echo "... gmock"
 	@echo "... gmock_main"
 	@echo "... gtest"
 	@echo "... gtest_main"
 	@echo "... main"
-	@echo "... vector_test"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... test/deque_test.o"
+	@echo "... test/deque_test.i"
+	@echo "... test/deque_test.s"
 	@echo "... test/vector_test.o"
 	@echo "... test/vector_test.i"
 	@echo "... test/vector_test.s"

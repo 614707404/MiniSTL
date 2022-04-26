@@ -1,6 +1,6 @@
 /myProkect/MiniSTL/build/CMakeFiles/install/strip.dir
 /myProkect/MiniSTL/build/CMakeFiles/install.dir
-/myProkect/MiniSTL/build/CMakeFiles/vector_test.dir
+/myProkect/MiniSTL/build/CMakeFiles/UniTest.dir
 /myProkect/MiniSTL/build/CMakeFiles/main.dir
 /myProkect/MiniSTL/build/CMakeFiles/edit_cache.dir
 /myProkect/MiniSTL/build/CMakeFiles/install/local.dir
