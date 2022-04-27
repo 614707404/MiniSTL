@@ -1,5 +1,6 @@
 #ifndef DAVIS_LIST_H
 #define DAVIS_LIST_H
+#include <iostream>
 #include "davis_iterator.h"
 #include "davis_allocate.h"
 #include "davis_type_traits.h"
@@ -9,8 +10,8 @@ namespace davis
     template <class _Tp>
     struct List_Node
     {
-        List_Node* _M_prev;
-        List_Node* _M_next;
+        List_Node<_Tp>* _M_prev;
+        List_Node<_Tp>* _M_next;
         _Tp _M_data;
     };
     template <class _Tp, class _Ref, class _Ptr>
@@ -30,11 +31,11 @@ namespace davis
         _Node* _M_node;
 
         List_iterator(){}
-        List_iterator(const _Node* x) : _M_node(x) {}
+        List_iterator(_Node* x) : _M_node(x) {}
         List_iterator(const _Self& x) : _M_node(x._M_node){}
 
-        void _M_incr() { _M_node = _M_node->next; }
-        void _M_decr() { _M_node = _M_node->prev; }
+        void _M_incr() { _M_node = _M_node->_M_next; }
+        void _M_decr() { _M_node = _M_node->_M_prev; }
 
         reference operator*()   {   return  _M_node->_M_data;   }
         pointer operator->()    {   return &(operator*());  }
@@ -72,7 +73,7 @@ namespace davis
         }
     };
 
-    template <class _Tp, class _Alloc = davis::allocator<_Tp>>
+    template <class _Tp, class _Alloc = davis::allocator<List_Node<_Tp>>>
     class list
     {
     // Member types
@@ -99,7 +100,7 @@ namespace davis
     // Member functions
     protected:
         _Node* _M_get_node() { return _M_allocator.allocate(1); }
-        void _M_put_node(_Node *p) { return _M_allocator.deallocate(p,1); }
+        void _M_put_node(_Node* __p) {return _M_allocator.deallocate(__p,1); }
         template <class _Integer>
         void _M_assign_dispatch(_Integer n, _Integer val, davis::__true_type);
         template <class _InputIterator>
@@ -117,11 +118,14 @@ namespace davis
         // constructor
         explicit list(const allocator_type& alloc = allocator_type());
         explicit list(size_type n);
-        list(size_type n, const value_type& val,
-             const allocator_type& alloc = allocator_type());
+
+        list(size_type __n, const value_type& __val, 
+            const allocator_type& __alloc = allocator_type());
+
         template <class _InputIterator>
-        list(_InputIterator first, _InputIterator last,
-             const allocator_type& alloc = allocator_type());
+        list(_InputIterator __first, _InputIterator __last,
+             const allocator_type& __alloc = allocator_type());
+
         list(const list<_Tp,_Alloc>& x);
         list(const list<_Tp,_Alloc>& x, const allocator_type& alloc);
         
@@ -159,58 +163,58 @@ namespace davis
 
         // Capacity
         size_type size() const noexcept;
-        bool empty() const noexcept { return _M_node->_M_next=_M_node; }
-        size_type max_size() const noexcept { return static_cast<size_type>(-1)}
-        
+        bool empty() const noexcept { return _M_node->_M_next==_M_node; }
+        size_type max_size() const noexcept { return static_cast<size_type>(-1); }
+
         // Element access
         reference front() { return *begin(); }
         const_reference front() const { return *begin(); }
-        reference back() { return *end(); }
-        const_reference back() const { return *end(); }
+        reference back() { return *(--end()); }
+        const_reference back() const { return *(--end()); }
 
         // Modifiers
         template <class _InputIterator>
         void assign(_InputIterator first, _InputIterator last);
         void assign(size_type n, const value_type& val);
         // TODO initializer_list 
-        void assign(initializer_list<value_type> il);
+        // void assign(initializer_list<value_type> il);
         // TODO emplace
-        template <class... _Args>
-        void emplace_front(_Args&&... args);
+        // template <class... _Args>
+        // void emplace_front(_Args&&... args);
         void push_front(const value_type& val);
         // TODO &&
-        void push_front(value_type&& val);
+        // void push_front(value_type&& val);
         void pop_front();
         // TODO &&
-        template <class... _Args>
-        void emplace_back(_Args&&... args);
+        // template <class... _Args>
+        // void emplace_back(_Args&&... args);
         void push_back(const value_type& val);
         // TODO &&
-        void push_back(value_type&& val);
+        // void push_back(value_type&& val);
         void pop_back();
         // TODO emplace
-        template <class... _Args>
-        iterator emplace(const_iterator position, _Args&&... args);
-        iterator insert(const_iterator position, const value_type& val);
-        iterator insert(const_iterator position, size_type n, const value_type& val);
+        // template <class... _Args>
+        // iterator emplace(const_iterator position, _Args&&... args);
+        iterator insert(iterator position, const value_type& val);
+        iterator insert(iterator position, size_type n, const value_type& val);
         template <class _InputIterator>
-        iterator insert(const_iterator position, _InputIterator first, _InputIterator last);
+        iterator insert(iterator position, _InputIterator first, _InputIterator last);
         // TODO && 
-        iterator insert(const_iterator position, value_type&& val);
+        // iterator insert(iterator position, value_type&& val);
         // TODO initializer_list
-        iterator insert(const_iterator position, initializer_list<value_type> il);
-        iterator erase(const_iterator position);
-        iterator erase(const_iterator first, const_iterator last);
+        // iterator insert(iterator position, initializer_list<value_type> il);
+        iterator erase(iterator position);
+        iterator erase(iterator first, iterator last);
         void swap(list& x);
         void resize(size_type n);
         void resize(size_type n, const value_type& val);
         void clear() noexcept;
 
         // Operations
-        void splice(const_iterator position, list& x);
-        void splice(const_iterator position, list& x, const_iterator i);
-        void splice(const_iterator position, list& x,
-                    const_iterator first, const_iterator last);
+        void splice(iterator position, list &x);
+        void splice(iterator position, list &x, iterator i);
+        void splice(iterator position, list &x,
+                    iterator first, iterator last);
         void remove(const value_type& val);
         template <class _Predicate>
         void remove_if(_Predicate pred);
@@ -226,46 +230,60 @@ namespace davis
         void reverse() noexcept;
 
         //TODO &&
-        void merge(list&& x);
-        template <class Compare>
-        void merge(list&& x, Compare comp);
-        //TODO &&
-        void splice(const_iterator position, list&& x);
-        void splice(const_iterator position, list&& x, const_iterator i);
-        void splice(const_iterator position, list&& x,
-                    const_iterator first, const_iterator last);
+        // void merge(list&& x);
+        // template <class Compare>
+        // void merge(list&& x, Compare comp);
+        // //TODO &&
+        // void splice(iterator position, list&& x);
+        // void splice(iterator position, list&& x, iterator i);
+        // void splice(iterator position, list&& x,
+        //             iterator first, iterator last);
         // Observers
         allocator_type get_allocator() const noexcept { return _M_allocator; }
     };
     
     template<class _Tp,class _Alloc>
-    list<_Tp,_Alloc>::list(const allocator_type& alloc = allocator_type()):_M_node(0),_M_allocator(alloc)
+    list<_Tp,_Alloc>::list(const allocator_type& alloc):_M_node(0),_M_allocator(alloc)
     {
         _M_node=_M_get_node();
         _M_node->_M_next = _M_node;
         _M_node->_M_prev = _M_node;
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc>::list(size_type n) : _M_node(0), _M_allocator(allocator_type())
+    list<_Tp, _Alloc>::list(size_type __n)
+        : _M_node(0), _M_allocator(allocator_type())
     {
-        insert(begin(),n,_Tp());
+        _M_node = _M_get_node();
+        _M_node->_M_next = _M_node;
+        _M_node->_M_prev = _M_node;
+        insert(begin(),__n,_Tp());
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc>::list(size_type n, const value_type& val,
-        const allocator_type& alloc = allocator_type()) : _M_node(0), _M_allocator(alloc)
+    list<_Tp, _Alloc>::list(size_type __n, const value_type& __val, 
+        const allocator_type& __alloc)
+        : _M_node(0), _M_allocator(__alloc)
     {
-        insert(begin(), n, val);
+        _M_node = _M_get_node();
+        _M_node->_M_next = _M_node;
+        _M_node->_M_prev = _M_node;
+        insert(begin(), __n, __val);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
     list<_Tp, _Alloc>::list(_InputIterator first, _InputIterator last,
-        const allocator_type& alloc = allocator_type()) : _M_node(0), _M_allocator(alloc)
+        const allocator_type& alloc) : _M_node(0), _M_allocator(alloc)
     {
+        _M_node = _M_get_node();
+        _M_node->_M_next = _M_node;
+        _M_node->_M_prev = _M_node;
         insert(begin(),first,last);
     }
     template <class _Tp, class _Alloc>
     list<_Tp, _Alloc>::list(const list<_Tp, _Alloc>& x):_M_node(0), _M_allocator(get_allocator())
     {
+        _M_node = _M_get_node();
+        _M_node->_M_next = _M_node;
+        _M_node->_M_prev = _M_node;
         insert(begin(), x.begin(), x.end());
     }
     template <class _Tp, class _Alloc>
@@ -280,7 +298,7 @@ namespace davis
         _M_put_node(_M_node);
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc>::list<_Tp, _Alloc>& operator=(const list<_Tp, _Alloc>& x)
+    list<_Tp, _Alloc>& list<_Tp, _Alloc>::operator=(const list<_Tp, _Alloc> &x)
     {
         if(this!=&x)
         {
@@ -288,13 +306,13 @@ namespace davis
             iterator last=end();
             const_iterator first2 = x.begin();
             const_iterator last2 = x.end();
-            for (; fisrt != last && first2 != last2;++first,++first2)
+            for (; first != last && first2 != last2; ++first, ++first2)
             {
                 *first=*first2;
             }
             if(first==last)
             {
-                insert(last,fisrt2,last2);
+                insert(last, first2, last2);
             }
             else
             {
@@ -304,18 +322,16 @@ namespace davis
         return *this;
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc> size_type list<_Tp, _Alloc> size() const noexcept
+    typename list<_Tp, _Alloc>::size_type list<_Tp, _Alloc>::size() const noexcept
     {
-        size_type result;
-        //TODO std::distance
-        std::distance(begin(),end(),result);
+        size_type result=davis::distance(begin(),end());
         return result;
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void list<_Tp, _Alloc>::assign(_InputIterator first, _InputIterator last)
+    void list<_Tp, _Alloc>::assign(_InputIterator __first, _InputIterator __last)
     {
-        typedef typename davis::_Is_integer<_Tp>::_Integral _Integral;
+        typedef typename davis::_Is_integer<_InputIterator>::_Integral _Integral;
         _M_assign_dispatch(__first, __last, _Integral());
     }
     template <class _Tp, class _Alloc>
@@ -341,47 +357,50 @@ namespace davis
     template <class _Tp, class _Alloc>
     void list<_Tp, _Alloc>::pop_back()
     {
-        erase(end());
+        iterator __tmp=end();
+        erase(--__tmp);
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc>::iterator 
-        list<_Tp, _Alloc>::insert(const_iterator position, const value_type& val)
+    typename list<_Tp, _Alloc>::iterator
+        list<_Tp, _Alloc>::insert(iterator __position, const value_type& __val)
     {
-        _Node* tmp = _M_create_node(val);
-        tmp->_M_next = position._M_node;
-        tmp->_M_prev = position._M_node->_M_prev;
-        position._M_node->_M_prev->_M_next=tmp;
-        position._M_node->_M_prev=tmp;
-        return tmp;
+        _Node* __tmp = _M_create_node(__val);
+        __tmp->_M_next = __position._M_node;
+        __tmp->_M_prev = __position._M_node->_M_prev;
+        __position._M_node->_M_prev->_M_next = __tmp;
+        __position._M_node->_M_prev = __tmp;
+        return __tmp;
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc>::iterator 
-        list<_Tp, _Alloc>::insert(const_iterator position, size_type n, const value_type& val)
+    typename list<_Tp, _Alloc>::iterator
+        list<_Tp, _Alloc>::insert(iterator __position, size_type __n, const value_type& __val)
     {
-        _M_fill_insert(__pos, __n, __x);
+        _M_fill_insert(__position, __n, __val);
+        return __position;
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    list<_Tp, _Alloc>::iterator
-        list<_Tp, _Alloc>::insert(const_iterator position, _InputIterator first, _InputIterator last)
+    typename list<_Tp, _Alloc>::iterator
+        list<_Tp, _Alloc>::insert(iterator position, _InputIterator first, _InputIterator last)
     {
-        typedef typename davis::_Is_integer<_Tp>::_Integral _Integral;
+        typedef typename davis::_Is_integer<_InputIterator>::_Integral _Integral;
         _M_insert_dispatch(position, first, last, _Integral());
+        return position;
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc>::iterator list<_Tp, _Alloc>::erase(const_iterator position)
+    typename list<_Tp, _Alloc>::iterator list<_Tp, _Alloc>::erase(iterator position)
     {
         _Node* prev_node = position._M_node->_M_prev;
         _Node* next_node = position._M_node->_M_next;
-        prev_node._M_node->_M_next = next_node;
-        next_node._M_node->_M_prev = prev_node;
+        prev_node->_M_next = next_node;
+        next_node->_M_prev = prev_node;
         _Node* curr_node = position._M_node;
         davis::destroy(&curr_node->_M_data);
         _M_put_node(curr_node);
-        return iterator()
+        return iterator();
     }
     template <class _Tp, class _Alloc>
-    list<_Tp, _Alloc>::iterator list<_Tp, _Alloc>::erase(const_iterator first, const_iterator last)
+    typename list<_Tp, _Alloc>::iterator list<_Tp, _Alloc>::erase(iterator first, iterator last)
     {
         while(first!=last)
         {
@@ -418,7 +437,7 @@ namespace davis
     template <class _Tp, class _Alloc>
     void list<_Tp, _Alloc>::clear() noexcept
     {
-        _Node* curr_node = _M_node->next;
+        _Node* curr_node = _M_node->_M_next;
         while(curr_node!=_M_node)
         {
             _Node* tmp = curr_node;
@@ -430,7 +449,7 @@ namespace davis
         _M_node->_M_prev = _M_node;
     }
     template <class _Tp, class _Alloc>
-    void list<_Tp, _Alloc>::splice(const_iterator position, list &x)
+    void list<_Tp, _Alloc>::splice(iterator position, list &x)
     {
         if(!x.empty())
         {
@@ -438,7 +457,7 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void list<_Tp, _Alloc>::splice(const_iterator position, list &x, const_iterator i)
+    void list<_Tp, _Alloc>::splice(iterator position, list &x, iterator i)
     {
         iterator j=i;
         ++j;
@@ -446,8 +465,8 @@ namespace davis
         transfer(position, i, j);
     }
     template <class _Tp, class _Alloc>
-    void list<_Tp, _Alloc>::splice(const_iterator position, list &x,
-                                   const_iterator first, const_iterator last)
+    void list<_Tp, _Alloc>::splice(iterator position, list &x,
+                                   iterator first, iterator last)
     {
         if(first!=last)
         {
@@ -477,7 +496,7 @@ namespace davis
         {
             iterator nxt = it;
             nxt++;
-            if (pred(*it) == val)
+            if (pred(*it))
             {
                 erase(it);
             }
@@ -522,7 +541,7 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    void list<_Tp, _Alloc>::merge(list &x)
+    void list<_Tp, _Alloc>::merge(list& __x)
     {
         iterator first1 = begin();
         iterator last1 = end();
@@ -542,7 +561,7 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class Compare>
-    void list<_Tp, _Alloc>::merge(list &x, Compare comp)
+    void list<_Tp, _Alloc>::merge(list& __x, Compare comp)
     {
         iterator first1 = begin();
         iterator last1 = end();
@@ -629,7 +648,7 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void list<_Tp, _Alloc>::_M_assign_dispatch(_Integer n, _Integer val, davis::__true_type)
+    void list<_Tp, _Alloc>::_M_assign_dispatch(_Integer __n, _Integer __val, davis::__true_type)
     {
         _M_fill_assign((size_type)__n, (_Tp)__val);
     }
@@ -666,15 +685,16 @@ namespace davis
         }
     }
     template <class _Tp, class _Alloc>
-    _Node* list<_Tp, _Alloc>::_M_create_node(const value_type& x)
+    typename list<_Tp, _Alloc>::_Node* 
+        list<_Tp, _Alloc>::_M_create_node(const value_type& __x)
     {
-        _Node* p=_M_get_node();
+        _Node* __p=_M_get_node();
         try{
-            davis::construct(&p->_M_data,x);
+            davis::construct(&__p->_M_data, __x);
         }catch(...){
-            _M_put_node(p);
+            _M_put_node(__p);
         }
-        return p;
+        return __p;
     }
     template <class _Tp, class _Alloc>
     void list<_Tp, _Alloc>::_M_fill_insert(iterator pos, size_type n, const _Tp &x)
@@ -686,31 +706,30 @@ namespace davis
     }
     template <class _Tp, class _Alloc>
     template <class _Integer>
-    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _Integer n, _Integer x, davis::__true_type)
+    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator __pos, _Integer __n, _Integer __x, davis::__true_type)
     {
         _M_fill_insert(__pos, (size_type)__n, (_Tp)__x);
     }
     template <class _Tp, class _Alloc>
     template <class _InputIterator>
-    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator pos, _InputIterator first, _InputIterator last, davis::__false_type)
+    void list<_Tp, _Alloc>::_M_insert_dispatch(iterator __pos, _InputIterator __first, _InputIterator __last, davis::__false_type)
     {
-        for (; first != last; ++fisrt)
+        for (; __first != __last; ++ __first)
         {
-            insert(position, *fisrt);
+            insert(__pos, *__first);
         }
     }
     template <class _Tp, class _Alloc>
-    void list<_Tp, _Alloc>::transfer(iterator position, iterator first, iterator last)
+    void list<_Tp, _Alloc>::transfer(iterator __position, iterator __first, iterator __last)
     {
-        last._M_node->_M_prev->_M_next = position._M_node;
-        first._M_node->_M_prev->_M_next = __last._M_node;
-        position._M_node->_M_prev->_M_next = first._M_node;
+        __last._M_node->_M_prev->_M_next = __position._M_node;
+        __first._M_node->_M_prev->_M_next = __last._M_node;
+        __position._M_node->_M_prev->_M_next = __first._M_node;
 
-        // Splice [first, last) into its new position.
-        _List_node_base *tmp = position._M_node->_M_prev;
-        position._M_node->_M_prev = last._M_node->_M_prev;
-        last._M_node->_M_prev = first._M_node->_M_prev;
-        first._M_node->_M_prev = tmp;
+        _Node* __tmp = __position._M_node->_M_prev;
+        __position._M_node->_M_prev = __last._M_node->_M_prev;
+        __last._M_node->_M_prev = __first._M_node->_M_prev;
+        __first._M_node->_M_prev = __tmp;
     }
 
     // Non-member function overloads

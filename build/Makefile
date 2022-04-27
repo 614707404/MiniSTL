@@ -297,6 +297,30 @@ test/deque_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/deque_test.cpp.s
 .PHONY : test/deque_test.cpp.s
 
+test/list_test.o: test/list_test.cpp.o
+.PHONY : test/list_test.o
+
+# target to build an object file
+test/list_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/list_test.cpp.o
+.PHONY : test/list_test.cpp.o
+
+test/list_test.i: test/list_test.cpp.i
+.PHONY : test/list_test.i
+
+# target to preprocess a source file
+test/list_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/list_test.cpp.i
+.PHONY : test/list_test.cpp.i
+
+test/list_test.s: test/list_test.cpp.s
+.PHONY : test/list_test.s
+
+# target to generate assembly for a file
+test/list_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/list_test.cpp.s
+.PHONY : test/list_test.cpp.s
+
 test/vector_test.o: test/vector_test.cpp.o
 .PHONY : test/vector_test.o
 
@@ -346,6 +370,9 @@ help:
 	@echo "... test/deque_test.o"
 	@echo "... test/deque_test.i"
 	@echo "... test/deque_test.s"
+	@echo "... test/list_test.o"
+	@echo "... test/list_test.i"
+	@echo "... test/list_test.s"
 	@echo "... test/vector_test.o"
 	@echo "... test/vector_test.i"
 	@echo "... test/vector_test.s"

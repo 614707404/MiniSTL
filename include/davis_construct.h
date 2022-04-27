@@ -5,10 +5,10 @@
 #include "davis_iterator.h"
 namespace davis
 {
-    template <class T1, class T2>
-    inline void construct(T1 *p, const T2 &value)
+    template <class _Tp1, class _Tp2>
+    inline void construct(_Tp1* __p, const _Tp2& __value)
     {
-        new (p) T1(value);
+        new (__p) _Tp1(__value);
     }
     template <class T1>
     inline void construct(T1 *p)
