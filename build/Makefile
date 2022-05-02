@@ -321,6 +321,78 @@ test/list_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/list_test.cpp.s
 .PHONY : test/list_test.cpp.s
 
+test/map_test.o: test/map_test.cpp.o
+.PHONY : test/map_test.o
+
+# target to build an object file
+test/map_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/map_test.cpp.o
+.PHONY : test/map_test.cpp.o
+
+test/map_test.i: test/map_test.cpp.i
+.PHONY : test/map_test.i
+
+# target to preprocess a source file
+test/map_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/map_test.cpp.i
+.PHONY : test/map_test.cpp.i
+
+test/map_test.s: test/map_test.cpp.s
+.PHONY : test/map_test.s
+
+# target to generate assembly for a file
+test/map_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/map_test.cpp.s
+.PHONY : test/map_test.cpp.s
+
+test/multimap_test.o: test/multimap_test.cpp.o
+.PHONY : test/multimap_test.o
+
+# target to build an object file
+test/multimap_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multimap_test.cpp.o
+.PHONY : test/multimap_test.cpp.o
+
+test/multimap_test.i: test/multimap_test.cpp.i
+.PHONY : test/multimap_test.i
+
+# target to preprocess a source file
+test/multimap_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multimap_test.cpp.i
+.PHONY : test/multimap_test.cpp.i
+
+test/multimap_test.s: test/multimap_test.cpp.s
+.PHONY : test/multimap_test.s
+
+# target to generate assembly for a file
+test/multimap_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multimap_test.cpp.s
+.PHONY : test/multimap_test.cpp.s
+
+test/set_test.o: test/set_test.cpp.o
+.PHONY : test/set_test.o
+
+# target to build an object file
+test/set_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/set_test.cpp.o
+.PHONY : test/set_test.cpp.o
+
+test/set_test.i: test/set_test.cpp.i
+.PHONY : test/set_test.i
+
+# target to preprocess a source file
+test/set_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/set_test.cpp.i
+.PHONY : test/set_test.cpp.i
+
+test/set_test.s: test/set_test.cpp.s
+.PHONY : test/set_test.s
+
+# target to generate assembly for a file
+test/set_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/set_test.cpp.s
+.PHONY : test/set_test.cpp.s
+
 test/vector_test.o: test/vector_test.cpp.o
 .PHONY : test/vector_test.o
 
@@ -373,6 +445,15 @@ help:
 	@echo "... test/list_test.o"
 	@echo "... test/list_test.i"
 	@echo "... test/list_test.s"
+	@echo "... test/map_test.o"
+	@echo "... test/map_test.i"
+	@echo "... test/map_test.s"
+	@echo "... test/multimap_test.o"
+	@echo "... test/multimap_test.i"
+	@echo "... test/multimap_test.s"
+	@echo "... test/set_test.o"
+	@echo "... test/set_test.i"
+	@echo "... test/set_test.s"
 	@echo "... test/vector_test.o"
 	@echo "... test/vector_test.i"
 	@echo "... test/vector_test.s"

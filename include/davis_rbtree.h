@@ -178,7 +178,7 @@ namespace davis
                 if(__z->_M_left==nullptr){
                     __rightmax = __z->_M_parent;
                 }else{
-                    __rightmax = __rbtree_node<_Tp>::maximun(__x);
+                    __rightmax = __rbtree_node<_Tp>::maximum(__x);
                 }
             }
         }else{
@@ -210,82 +210,82 @@ namespace davis
             while (__x != __root && (__x == 0 || __x->_M_color == __rbtree_black))
                 if (__x == __x_parent->_M_left)
                 {
-                    _Rb_tree_node_base *__w = __x_parent->_M_right;
-                    if (__w->_M_color == _S_rb_tree_red)
+                    __rbtree_node<_Tp>* __w = __x_parent->_M_right;
+                    if (__w->_M_color == __rbtree_red)
                     {
-                        __w->_M_color = _S_rb_tree_black;
-                        __x_parent->_M_color = _S_rb_tree_red;
-                        _Rb_tree_rotate_left(__x_parent, __root);
+                        __w->_M_color = __rbtree_black;
+                        __x_parent->_M_color = __rbtree_red;
+                        rbtree_rotate_left(__x_parent, __root);
                         __w = __x_parent->_M_right;
                     }
                     if ((__w->_M_left == 0 ||
-                         __w->_M_left->_M_color == _S_rb_tree_black) &&
+                         __w->_M_left->_M_color == __rbtree_black) &&
                         (__w->_M_right == 0 ||
-                         __w->_M_right->_M_color == _S_rb_tree_black))
+                         __w->_M_right->_M_color == __rbtree_black))
                     {
-                        __w->_M_color = _S_rb_tree_red;
+                        __w->_M_color = __rbtree_red;
                         __x = __x_parent;
                         __x_parent = __x_parent->_M_parent;
                     }
                     else
                     {
                         if (__w->_M_right == 0 ||
-                            __w->_M_right->_M_color == _S_rb_tree_black)
+                            __w->_M_right->_M_color == __rbtree_black)
                         {
                             if (__w->_M_left)
-                                __w->_M_left->_M_color = _S_rb_tree_black;
-                            __w->_M_color = _S_rb_tree_red;
-                            _Rb_tree_rotate_right(__w, __root);
+                                __w->_M_left->_M_color = __rbtree_black;
+                            __w->_M_color = __rbtree_red;
+                            rbtree_rotate_right(__w, __root);
                             __w = __x_parent->_M_right;
                         }
                         __w->_M_color = __x_parent->_M_color;
-                        __x_parent->_M_color = _S_rb_tree_black;
+                        __x_parent->_M_color = __rbtree_black;
                         if (__w->_M_right)
-                            __w->_M_right->_M_color = _S_rb_tree_black;
-                        _Rb_tree_rotate_left(__x_parent, __root);
+                            __w->_M_right->_M_color = __rbtree_black;
+                        rbtree_rotate_left(__x_parent, __root);
                         break;
                     }
                 }
                 else
                 { // same as above, with _M_right <-> _M_left.
-                    _Rb_tree_node_base *__w = __x_parent->_M_left;
-                    if (__w->_M_color == _S_rb_tree_red)
+                    __rbtree_node<_Tp>* __w = __x_parent->_M_left;
+                    if (__w->_M_color == __rbtree_red)
                     {
-                        __w->_M_color = _S_rb_tree_black;
-                        __x_parent->_M_color = _S_rb_tree_red;
-                        _Rb_tree_rotate_right(__x_parent, __root);
+                        __w->_M_color = __rbtree_black;
+                        __x_parent->_M_color = __rbtree_red;
+                        rbtree_rotate_right(__x_parent, __root);
                         __w = __x_parent->_M_left;
                     }
                     if ((__w->_M_right == 0 ||
-                         __w->_M_right->_M_color == _S_rb_tree_black) &&
+                         __w->_M_right->_M_color == __rbtree_black) &&
                         (__w->_M_left == 0 ||
-                         __w->_M_left->_M_color == _S_rb_tree_black))
+                         __w->_M_left->_M_color == __rbtree_black))
                     {
-                        __w->_M_color = _S_rb_tree_red;
+                        __w->_M_color = __rbtree_red;
                         __x = __x_parent;
                         __x_parent = __x_parent->_M_parent;
                     }
                     else
                     {
                         if (__w->_M_left == 0 ||
-                            __w->_M_left->_M_color == _S_rb_tree_black)
+                            __w->_M_left->_M_color == __rbtree_black)
                         {
                             if (__w->_M_right)
-                                __w->_M_right->_M_color = _S_rb_tree_black;
-                            __w->_M_color = _S_rb_tree_red;
-                            _Rb_tree_rotate_left(__w, __root);
+                                __w->_M_right->_M_color = __rbtree_black;
+                            __w->_M_color = __rbtree_red;
+                            rbtree_rotate_left(__w, __root);
                             __w = __x_parent->_M_left;
                         }
                         __w->_M_color = __x_parent->_M_color;
-                        __x_parent->_M_color = _S_rb_tree_black;
+                        __x_parent->_M_color = __rbtree_black;
                         if (__w->_M_left)
-                            __w->_M_left->_M_color = _S_rb_tree_black;
-                        _Rb_tree_rotate_right(__x_parent, __root);
+                            __w->_M_left->_M_color = __rbtree_black;
+                        rbtree_rotate_right(__x_parent, __root);
                         break;
                     }
                 }
             if (__x)
-                __x->_M_color = _S_rb_tree_black;
+                __x->_M_color = __rbtree_black;
         }
         return __y;
     }
@@ -342,7 +342,7 @@ namespace davis
         }
 
         __rbtree_iterator(){}
-        __rbtree_iterator(link_type* __x){ _M_node=__x; }
+        __rbtree_iterator(link_type __x){ _M_node=__x; }
         __rbtree_iterator(const iterator& __it){ _M_node=__it._M_node; }
 
         reference operator*() const { return _M_node->_M_value; }
@@ -353,7 +353,7 @@ namespace davis
             return *this;
         }
         _Self operator++(int){
-            _Self __tmp=this;
+            _Self __tmp=*this;
             _M_increment();
             return __tmp;
         }
@@ -362,7 +362,7 @@ namespace davis
             return *this;
         }
         _Self operator--(int){
-            _Self __tmp=this;
+            _Self __tmp=*this;
             _M_decrement();
             return __tmp;
         }
@@ -415,11 +415,12 @@ namespace davis
             __tmp->_M_right = 0;
             return __tmp;
         }
-        void _M_destory_node(link_type __p){
+        void _M_destroy_node(link_type __p)
+        {
             davis::destroy(&__p->_M_value);
             _M_put_node(__p);
         }
-     
+
     protected:
         allocator_type _M_allocator;
         link_type _M_header;
@@ -434,7 +435,7 @@ namespace davis
         static link_type& _S_right(link_type __x){  return __x->_M_right;  }
         static link_type& _S_parent(link_type __x){  return __x->_M_parent; }
         static reference _S_value(link_type __x){  return __x->_M_value; }
-        static const key_type& _S_key(link_type __x) { return _KeyofValue()(value(__x)); }
+        static const key_type &_S_key(link_type __x) { return _KeyofValue()(_S_value(__x)); }
         static color_type& _S_color(link_type __x){ return __x->_M_color; }
 
         static link_type _S_minimum(link_type __x) { return __rbtree_node<value_type>::minimum(__x); }
@@ -464,11 +465,12 @@ namespace davis
         rbtree(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x)
             : _M_allocator(__x.get_allocator()), _M_header(0), 
             _M_key_compare(__x._M_key_compare), _M_node_count(0){
-                if(__x->_M_root()==nullptr){
+                if(__x._M_root()==nullptr){
                     _M_empty_initialize();
                 }else{
+                    _M_header = _M_get_node();
                     _S_color(_M_header) = __rbtree_red;
-                    _M_root() = _M_copy(__x->_M_root,_M_header);
+                    _M_root() = _M_copy(__x._M_root(),_M_header);
                     _M_leftmost() = _S_minimum(_M_header);
                     _M_rightmost() = _S_maximum(_M_header);
                 }
@@ -477,7 +479,7 @@ namespace davis
         ~rbtree(){clear();}
         rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>&
             operator=(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x);
-        allocator_type get_allocator() { return _M_allocator; }
+        allocator_type get_allocator() const { return _M_allocator; }
 
     private:
         void _M_empty_initialize(){
@@ -496,8 +498,8 @@ namespace davis
         const_iterator end() const { return _M_header; }
         const_iterator cend() const { return _M_header; }
         // TODO reverse iterator
-        bool empty() { return _M_node_count==0; }
-        size_type size() { return _M_node_count; }
+        bool empty() const { return _M_node_count==0; }
+        size_type size() const { return _M_node_count; }
         size_type max_size() { return  size_type(-1); }
         void swap(rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>& __t){
             std::swap(_M_header, __t._M_header);
@@ -506,7 +508,7 @@ namespace davis
         }
 
     public:
-        pair<iterator, bool> insert_unique(const value_type& __x);
+        std::pair<iterator, bool> insert_unique(const value_type& __x);
         iterator insert_equal(const value_type& __x);
 
         iterator insert_unique(iterator __position, const value_type& __x);
@@ -541,8 +543,8 @@ namespace davis
         const_iterator lower_bound(const key_type &__x) const;
         iterator upper_bound(const key_type &__x);
         const_iterator upper_bound(const key_type &__x) const;
-        pair<iterator, iterator> equal_range(const key_type &__x);
-        pair<const_iterator, const_iterator> equal_range(const key_type &__x) const;
+        std::pair<iterator, iterator> equal_range(const key_type &__x);
+        std::pair<const_iterator, const_iterator> equal_range(const key_type &__x) const;
 
     public:
         bool __rb_verify() const;
@@ -551,8 +553,8 @@ namespace davis
     template <class _Key, class _Value, class _KeyofValue,
               class _Compare, class _Alloc>
     inline bool
-    operator==(const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
-               const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
+    operator==(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
+               const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
     {
         return __x.size() == __y.size() &&
                std::equal(__x.begin(), __x.end(), __y.begin());
@@ -561,8 +563,8 @@ namespace davis
     template <class _Key, class _Value, class _KeyofValue,
               class _Compare, class _Alloc>
     inline bool
-    operator<(const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
-              const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
+    operator<(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
+              const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
     {
         return std::lexicographical_compare(__x.begin(), __x.end(),
                                        __y.begin(), __y.end());
@@ -570,8 +572,8 @@ namespace davis
     template <class _Key, class _Value, class _KeyofValue,
               class _Compare, class _Alloc>
     inline bool
-    operator!=(const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
-               const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
+    operator!=(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
+               const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
     {
         return !(__x == __y);
     }
@@ -579,8 +581,8 @@ namespace davis
     template <class _Key, class _Value, class _KeyofValue,
               class _Compare, class _Alloc>
     inline bool
-    operator>(const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
-              const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
+    operator>(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
+              const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
     {
         return __y < __x;
     }
@@ -588,8 +590,8 @@ namespace davis
     template <class _Key, class _Value, class _KeyofValue,
               class _Compare, class _Alloc>
     inline bool
-    operator<=(const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
-               const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
+    operator<=(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
+               const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
     {
         return !(__y < __x);
     }
@@ -597,8 +599,8 @@ namespace davis
     template <class _Key, class _Value, class _KeyofValue,
               class _Compare, class _Alloc>
     inline bool
-    operator>=(const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
-               const rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
+    operator>=(const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
+               const rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
     {
         return !(__x < __y);
     }
@@ -606,8 +608,8 @@ namespace davis
     template <class _Key, class _Value, class _KeyofValue,
               class _Compare, class _Alloc>
     inline void
-    swap(rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
-         rbrtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
+    swap(rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__x,
+         rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc> &__y)
     {
         __x.swap(__y);
     }
@@ -706,12 +708,12 @@ namespace davis
         {
             _M_erase(_S_right(__x));
             link_type __y = _S_left(__x);
-            destroy_node(__x);
+            _M_destroy_node(__x);
             __x = __y;
         }
     }
     template <class _Key, class _Value, class _KeyofValue, class _Compare, class _Alloc>
-    pair<typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::iterator, bool> 
+    std::pair<typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::iterator, bool> 
     rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>
         ::insert_unique(const value_type& __val){
         link_type __y = _M_header;
@@ -727,14 +729,14 @@ namespace davis
         iterator __j = iterator(__y);
         if (__comp)//__x要作为左节点插入
             if (__j == begin())
-                return pair<iterator, bool>(_M_insert(__x, __y, __val), true);
+                return std::pair<iterator, bool>(_M_insert(__x, __y, __val), true);
             else
                 --__j;
         //判断j节点是否小于val
-        if (_M_key_compare(_S_key(__j._M_node), _KeyOfValue()(__val)))
-            return pair<iterator, bool>(_M_insert(__x, __y, __val), true);
+        if (_M_key_compare(_S_key(__j._M_node), _KeyofValue()(__val)))
+            return std::pair<iterator, bool>(_M_insert(__x, __y, __val), true);
         //插入失败，发生重复
-        return pair<iterator, bool>(__j, false);
+        return std::pair<iterator, bool>(__j, false);
     }
     template <class _Key, class _Value, class _KeyofValue, class _Compare, class _Alloc>
     typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::iterator
@@ -764,13 +766,13 @@ namespace davis
                 && _M_key_compare(_KeyofValue()(__val), _S_key(__position._M_node)))
             {
                 if (_S_right(__before._M_node) == 0)
-                    return _M_insert(0, __before._M_node, __v);
+                    return _M_insert(0, __before._M_node, __val);
                 else
-                    return _M_insert(__position._M_node, __position._M_node, __v);
+                    return _M_insert(__position._M_node, __position._M_node, __val);
                 // first argument just needs to be non-null
             }
             else
-                return insert_unique(__v).first;
+                return insert_unique(__val).first;
         }
     }
     template <class _Key, class _Value, class _KeyofValue, class _Compare, class _Alloc>
@@ -785,7 +787,7 @@ namespace davis
             __x = _M_key_compare(_KeyofValue()(__val), _S_key(__x)) ?
                  _S_left(__x) : _S_right(__x);
         }
-        return _M_insert(__x,__y,__val)
+        return _M_insert(__x,__y,__val);
     }
 
     template <class _Key, class _Value, class _KeyofValue, class _Compare, class _Alloc>
@@ -812,13 +814,13 @@ namespace davis
         {
             iterator __before = __position;
             --__before;
-            if (!_M_key_compare(_KeyofValue()(__val,_S_key(__before._M_node) )) 
+            if (!_M_key_compare(_KeyofValue()(__val),_S_key(__before._M_node) )
                 && !_M_key_compare(_S_key(__position._M_node),_KeyofValue()(__val) ))
             {
                 if (_S_right(__before._M_node) == 0)
-                    return _M_insert(0, __before._M_node, __v);
+                    return _M_insert(0, __before._M_node, __val);
                 else
-                    return _M_insert(__position._M_node, __position._M_node, __v);
+                    return _M_insert(__position._M_node, __position._M_node, __val);
                 // first argument just needs to be non-null
             }
             else
@@ -855,8 +857,8 @@ namespace davis
     typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::size_type 
     rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>
         ::erase(const key_type &__k){
-        pair<iterator, iterator> __p = equal_range(__k);
-        size_type __n =distance(__p.first, __p.second,);
+        std::pair<iterator, iterator> __p = equal_range(__k);
+        size_type __n =davis::distance(__p.first, __p.second);
         erase(__p.first, __p.second);
         return __n;
     }
@@ -914,7 +916,7 @@ namespace davis
     rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>
         ::count(const key_type &__k) const
     {
-        pair<const_iterator, const_iterator> __p = equal_range(__k);
+        std::pair<const_iterator, const_iterator> __p = equal_range(__k);
         size_type __n =davis::distance(__p.first, __p.second);
         return __n;
     }
@@ -982,18 +984,18 @@ namespace davis
     }
 
     template <class _Key, class _Value, class _KeyofValue, class _Compare, class _Alloc>
-    inline pair<typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::iterator,
+    inline std::pair<typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::iterator,
                 typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::iterator>
     rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::equal_range(const key_type &__k)
     {
-        return pair<iterator, iterator>(lower_bound(__k), upper_bound(__k));
+        return std::pair<iterator, iterator>(lower_bound(__k), upper_bound(__k));
     }
     template <class _Key, class _Value, class _KeyofValue, class _Compare, class _Alloc>
-    inline pair<typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::const_iterator,
+    inline std::pair<typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::const_iterator,
                 typename rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::const_iterator>
     rbtree<_Key, _Value, _KeyofValue, _Compare, _Alloc>::equal_range(const key_type &__k) const
     {
-        return pair<const_iterator, const_iterator>(lower_bound(__k), upper_bound(__k));
+        return std::pair<const_iterator, const_iterator>(lower_bound(__k), upper_bound(__k));
     }
     template<class _Tp>
     inline int __black_count(__rbtree_node<_Tp> *__node, __rbtree_node<_Tp> *__root)
@@ -1021,14 +1023,14 @@ namespace davis
         int __len = __black_count(_M_leftmost(), _M_root());
         for (const_iterator __it = begin(); __it != end(); ++__it)
         {
-            _Link_type __x = (_Link_type)__it._M_node;
-            _Link_type __L = _S_left(__x);
-            _Link_type __R = _S_right(__x);
+            link_type __x = (link_type)__it._M_node;
+            link_type __L = _S_left(__x);
+            link_type __R = _S_right(__x);
 
             // 无两个连续的红色节点
-            if (__x->_M_color == _S_rb_tree_red)
-                if ((__L && __L->_M_color == _S_rb_tree_red) ||
-                    (__R && __R->_M_color == _S_rb_tree_red))
+            if (__x->_M_color == __rbtree_red)
+                if ((__L && __L->_M_color == __rbtree_red) ||
+                    (__R && __R->_M_color == __rbtree_red))
                     return false;
             // 判断节点大小正确性
             if (__L && _M_key_compare(_S_key(__x), _S_key(__L)))
@@ -1040,9 +1042,9 @@ namespace davis
                 return false;
         }
         // 验证header连接的头尾节点是否正确
-        if (_M_leftmost() != _Rb_tree_node_base::_S_minimum(_M_root()))
+        if (_M_leftmost() != rbtree_node::_S_minimum(_M_root()))
             return false;
-        if (_M_rightmost() != _Rb_tree_node_base::_S_maximum(_M_root()))
+        if (_M_rightmost() != rbtree_node::_S_maximum(_M_root()))
             return false;
 
         return true;
