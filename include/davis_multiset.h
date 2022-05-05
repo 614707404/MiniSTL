@@ -66,10 +66,10 @@ namespace davis
         size_type max_size() const { return _M_t.max_size(); }
         void swap(multiset<_Key, _Compare, _Alloc> &__x) { _M_t.swap(__x._M_t); }
 
-        std::pair<iterator, bool> insert(const value_type &__x)
+        iterator insert(const value_type &__x)
         {
-            std::pair<typename _Rep_type::iterator, bool> __p = _M_t.insert_equal(__x);
-            return std::pair<iterator, bool>(__p.first, __p.second);
+            typename _Rep_type::iterator __p = _M_t.insert_equal(__x);
+            return __p;
         }
         iterator insert(iterator __position, const value_type &__x)
         {

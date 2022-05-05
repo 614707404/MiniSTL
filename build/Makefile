@@ -369,6 +369,30 @@ test/multimap_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multimap_test.cpp.s
 .PHONY : test/multimap_test.cpp.s
 
+test/multiset_test.o: test/multiset_test.cpp.o
+.PHONY : test/multiset_test.o
+
+# target to build an object file
+test/multiset_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multiset_test.cpp.o
+.PHONY : test/multiset_test.cpp.o
+
+test/multiset_test.i: test/multiset_test.cpp.i
+.PHONY : test/multiset_test.i
+
+# target to preprocess a source file
+test/multiset_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multiset_test.cpp.i
+.PHONY : test/multiset_test.cpp.i
+
+test/multiset_test.s: test/multiset_test.cpp.s
+.PHONY : test/multiset_test.s
+
+# target to generate assembly for a file
+test/multiset_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multiset_test.cpp.s
+.PHONY : test/multiset_test.cpp.s
+
 test/set_test.o: test/set_test.cpp.o
 .PHONY : test/set_test.o
 
@@ -392,6 +416,102 @@ test/set_test.s: test/set_test.cpp.s
 test/set_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/set_test.cpp.s
 .PHONY : test/set_test.cpp.s
+
+test/unordered_map_test.o: test/unordered_map_test.cpp.o
+.PHONY : test/unordered_map_test.o
+
+# target to build an object file
+test/unordered_map_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_map_test.cpp.o
+.PHONY : test/unordered_map_test.cpp.o
+
+test/unordered_map_test.i: test/unordered_map_test.cpp.i
+.PHONY : test/unordered_map_test.i
+
+# target to preprocess a source file
+test/unordered_map_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_map_test.cpp.i
+.PHONY : test/unordered_map_test.cpp.i
+
+test/unordered_map_test.s: test/unordered_map_test.cpp.s
+.PHONY : test/unordered_map_test.s
+
+# target to generate assembly for a file
+test/unordered_map_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_map_test.cpp.s
+.PHONY : test/unordered_map_test.cpp.s
+
+test/unordered_multimap_test.o: test/unordered_multimap_test.cpp.o
+.PHONY : test/unordered_multimap_test.o
+
+# target to build an object file
+test/unordered_multimap_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multimap_test.cpp.o
+.PHONY : test/unordered_multimap_test.cpp.o
+
+test/unordered_multimap_test.i: test/unordered_multimap_test.cpp.i
+.PHONY : test/unordered_multimap_test.i
+
+# target to preprocess a source file
+test/unordered_multimap_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multimap_test.cpp.i
+.PHONY : test/unordered_multimap_test.cpp.i
+
+test/unordered_multimap_test.s: test/unordered_multimap_test.cpp.s
+.PHONY : test/unordered_multimap_test.s
+
+# target to generate assembly for a file
+test/unordered_multimap_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multimap_test.cpp.s
+.PHONY : test/unordered_multimap_test.cpp.s
+
+test/unordered_multiset_test.o: test/unordered_multiset_test.cpp.o
+.PHONY : test/unordered_multiset_test.o
+
+# target to build an object file
+test/unordered_multiset_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multiset_test.cpp.o
+.PHONY : test/unordered_multiset_test.cpp.o
+
+test/unordered_multiset_test.i: test/unordered_multiset_test.cpp.i
+.PHONY : test/unordered_multiset_test.i
+
+# target to preprocess a source file
+test/unordered_multiset_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multiset_test.cpp.i
+.PHONY : test/unordered_multiset_test.cpp.i
+
+test/unordered_multiset_test.s: test/unordered_multiset_test.cpp.s
+.PHONY : test/unordered_multiset_test.s
+
+# target to generate assembly for a file
+test/unordered_multiset_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multiset_test.cpp.s
+.PHONY : test/unordered_multiset_test.cpp.s
+
+test/unordered_set_test.o: test/unordered_set_test.cpp.o
+.PHONY : test/unordered_set_test.o
+
+# target to build an object file
+test/unordered_set_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_set_test.cpp.o
+.PHONY : test/unordered_set_test.cpp.o
+
+test/unordered_set_test.i: test/unordered_set_test.cpp.i
+.PHONY : test/unordered_set_test.i
+
+# target to preprocess a source file
+test/unordered_set_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_set_test.cpp.i
+.PHONY : test/unordered_set_test.cpp.i
+
+test/unordered_set_test.s: test/unordered_set_test.cpp.s
+.PHONY : test/unordered_set_test.s
+
+# target to generate assembly for a file
+test/unordered_set_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_set_test.cpp.s
+.PHONY : test/unordered_set_test.cpp.s
 
 test/vector_test.o: test/vector_test.cpp.o
 .PHONY : test/vector_test.o
@@ -451,9 +571,24 @@ help:
 	@echo "... test/multimap_test.o"
 	@echo "... test/multimap_test.i"
 	@echo "... test/multimap_test.s"
+	@echo "... test/multiset_test.o"
+	@echo "... test/multiset_test.i"
+	@echo "... test/multiset_test.s"
 	@echo "... test/set_test.o"
 	@echo "... test/set_test.i"
 	@echo "... test/set_test.s"
+	@echo "... test/unordered_map_test.o"
+	@echo "... test/unordered_map_test.i"
+	@echo "... test/unordered_map_test.s"
+	@echo "... test/unordered_multimap_test.o"
+	@echo "... test/unordered_multimap_test.i"
+	@echo "... test/unordered_multimap_test.s"
+	@echo "... test/unordered_multiset_test.o"
+	@echo "... test/unordered_multiset_test.i"
+	@echo "... test/unordered_multiset_test.s"
+	@echo "... test/unordered_set_test.o"
+	@echo "... test/unordered_set_test.i"
+	@echo "... test/unordered_set_test.s"
 	@echo "... test/vector_test.o"
 	@echo "... test/vector_test.i"
 	@echo "... test/vector_test.s"
