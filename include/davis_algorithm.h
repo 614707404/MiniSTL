@@ -9,7 +9,7 @@ namespace davis{
     bool all_of(_InputIterator __first, _InputIterator __last, _UnaryPredicate __pred);
     // TODD
     template <class _InputIterator, class _UnaryPredicate>
-    bool any_of(_InputIterator __first, _InputIterator __last, UnaryPredicate __pred);
+    bool any_of(_InputIterator __first, _InputIterator __last, _UnaryPredicate __pred);
     // TODD
     template <class _InputIterator, class _UnaryPredicate>
     bool none_of(_InputIterator __first, _InputIterator __last, _UnaryPredicate __pred);
@@ -132,7 +132,7 @@ namespace davis{
         {
             for (_ForwardIterator2 __it = __first2; __it != __last2; ++__it)
             {
-                if (__pred(*__first1, *it))
+                if (__pred(*__first1, *__it))
                 {
                     return __first1;
                 }
@@ -194,6 +194,7 @@ namespace davis{
             if(*__first==__val){
                 ++__res;
             }
+            ++__first;
         }
         return __res;
     }
@@ -209,35 +210,36 @@ namespace davis{
             {
                 ++__res;
             }
+            ++__first;
         }
         return __res;
     }
 
-    // template <class _InputIterator1, class _InputIterator2>
-    // inline std::pair<_InputIterator1, _InputIterator2>
-    // mismatch(_InputIterator1 __first1, _InputIterator1 __last1,
-    //          _InputIterator2 __first2)
-    // {
-    //     while (__first1 != __last1 && (*__first1 == *__first2))
-    //     {
-    //         ++__first1;
-    //         ++__first2;
-    //     }
-    //     return std::make_pair(__first1, __first2);
-    // }
+    template <class _InputIterator1, class _InputIterator2>
+    inline std::pair<_InputIterator1, _InputIterator2>
+    mismatch(_InputIterator1 __first1, _InputIterator1 __last1,
+             _InputIterator2 __first2)
+    {
+        while (__first1 != __last1 && (*__first1 == *__first2))
+        {
+            ++__first1;
+            ++__first2;
+        }
+        return std::make_pair(__first1, __first2);
+    }
 
-    // template <class _InputIterator1, class _InputIterator2, class _BinaryPredicate>
-    // inline std::pair<_InputIterator1, _InputIterator2>
-    // mismatch(_InputIterator1 __first1, _InputIterator1 __last1,
-    //          _InputIterator2 __first2, _BinaryPredicate __pred)
-    // {
-    //     while (__first1 != __last1 && __pred(*__first1,*__first2))
-    //     {
-    //         ++__first1;
-    //         ++__first2;
-    //     }
-    //     return std::make_pair(__first1, __first2);
-    // }
+    template <class _InputIterator1, class _InputIterator2, class _BinaryPredicate>
+    inline std::pair<_InputIterator1, _InputIterator2>
+    mismatch(_InputIterator1 __first1, _InputIterator1 __last1,
+             _InputIterator2 __first2, _BinaryPredicate __pred)
+    {
+        while (__first1 != __last1 && __pred(*__first1,*__first2))
+        {
+            ++__first1;
+            ++__first2;
+        }
+        return std::make_pair(__first1, __first2);
+    }
 
     template <class _InputIterator1, class _InputIterator2>
     inline bool equal(_InputIterator1 __first1, _InputIterator1 __last1,
@@ -346,7 +348,7 @@ namespace davis{
 
     template <class _ForwardIterator, class _Size, class _Tp, class _BinaryPredicate>
     inline _ForwardIterator search_n(_ForwardIterator __first, _ForwardIterator __last,
-                                     _Size count, const _Tp &val, _BinaryPredicate __pred)
+                                     _Size __count, const _Tp &__val, _BinaryPredicate __pred)
     {
         _ForwardIterator __limit = __first;
         davis::advance(__limit, davis::distance(__first, __last) - __count);
@@ -371,8 +373,8 @@ namespace davis{
     // Modifying sequence operations
     // copy 函数
     template <class _RandomAccessIterator, class _OutputIterator, class _Distance>
-    inline _OutputIterator __copy_d(_InputIterator __first, _InputIterator __last,
-                                  _OutputIterator __result, _Distance *)
+    inline _OutputIterator __copy_d(_RandomAccessIterator __first, _RandomAccessIterator __last,
+                                    _OutputIterator __result, _Distance *)
     {
         for(_Distance n = __last-__first; n>0 ;--n,++__result,++__first){
             *__result = *__first;
@@ -426,7 +428,7 @@ namespace davis{
         }
     };
     template <class _Tp>
-    struct __copy_dispatch<_Tp *, _Tp *>
+    struct __copy_dispatch<const _Tp *,const _Tp *>
     {
         _Tp *operator()(const _Tp *__first,const _Tp *__last,
                         _Tp *__result)
@@ -488,8 +490,9 @@ namespace davis{
                                                    davis::random_access_iterator_tag,
                                                    _Dis *)
     {
-        for(_Dis __n=__last-__first;_-n>0;--__n){
-            *--__result=*--__last;
+        for (_Dis __n = __last - __first; __n > 0; --__n)
+        {
+            *--__result = *--__last;
         }
         return __result;
     }
@@ -502,7 +505,7 @@ namespace davis{
     {
         typedef typename davis::iterator_traits<_BidirectionalIterator1>::iterator_category _Cat;
         typedef typename davis::iterator_traits<_BidirectionalIterator1>::difference_type _Dis;
-        return __copy_backward(__first,__last,__result,_Cat(),(_Dis*)0);
+        return __copy_backward(__first, __last, __result, _Cat(), (_Dis *)0);
     }
     template <class _Tp>
     inline _Tp* __copy_backward(_Tp* __first,
@@ -598,7 +601,7 @@ namespace davis{
     {
         while (__first1 != __last1)
         {
-            *__result = __op(*__first1,*__first2);
+            *__result = __binary_op(*__first1, *__first2);
             ++__first1;
             ++__first2;
             ++__result;
@@ -630,7 +633,7 @@ namespace davis{
         }
     }
 
-    template <class _InputIterator, class _OutputIterator, class T>
+    template <class _InputIterator, class _OutputIterator, class _Tp>
     _OutputIterator replace_copy(_InputIterator __first, _InputIterator __last,
                                  _OutputIterator __result,
                                  const _Tp& __old_value, const _Tp& __new_value)
@@ -803,7 +806,7 @@ namespace davis{
         ++__result;
     }
 
-    template <class _ForwardIterator, class BinaryPredicate>
+    template <class _ForwardIterator, class _BinaryPredicate>
     _ForwardIterator unique(_ForwardIterator __first, _ForwardIterator __last,
                            _BinaryPredicate __pred)
     {
@@ -989,7 +992,7 @@ namespace davis{
         else
         {
             _BidirectionalIterator __middle = __first;
-            davis::advance(_middle, __len / 2);
+            davis::advance(__middle, __len / 2);
             return davis::rotate(__stable_partition_adaptive(__first, __middle, __pred,
                                                              __len / 2, __buffer, __buffer_size),
                                                              __middle,
@@ -1039,7 +1042,7 @@ namespace davis{
     }
 
     template <class _InputIterator, class _OutputIterator1,
-              class _OutputIterator2, class _UnaryPredicate __pred>
+              class _OutputIterator2, class _UnaryPredicate>
     std::pair<_OutputIterator1, _OutputIterator2>
     partition_copy(_InputIterator __first, _InputIterator __last,
                    _OutputIterator1 result_true, _OutputIterator2 result_false,
@@ -1093,7 +1096,7 @@ namespace davis{
     inline _Size __lg(_Size __n)
     {
         _Size __k;
-        for (k = 0; n > 1; n >> 1)
+        for (__k = 0; __n > 1; __n >> 1)
             ++__k;
         return __k;
     }
@@ -1137,7 +1140,7 @@ namespace davis{
         _Tp __val = *__last;
         if (__val<*__first){
             copy_backward(__first,__last,__last+1);
-            *__first = __val
+            *__first = __val;
         }
         else
             __unguarded_linear_insert(__last, __val);
@@ -1246,7 +1249,7 @@ namespace davis{
         if (__comp(__val, *__first))
         {
             copy_backward(__first, __last, __last + 1);
-            *__first = __val
+            *__first = __val;
         }
         else
             __unguarded_linear_insert(__last, __val);
@@ -1260,7 +1263,7 @@ namespace davis{
             __unguarded_linear_insert(__i, _Tp(*__i), __comp);
     }
 
-    template <class _RandomAccessIter>
+    template <class _RandomAccessIter,class _Compare>
     inline void __unguarded_insertion_sort(_RandomAccessIter __first,
                                            _RandomAccessIter __last,
                                            _Compare __comp)
@@ -1623,7 +1626,7 @@ namespace davis{
     }
 
     template <class _RandomAccessIterator>
-    void partial_sort(_RandomAccessIterator __first, _RandomAccessIterator middle,
+    void partial_sort(_RandomAccessIterator __first, _RandomAccessIterator __middle,
                       _RandomAccessIterator __last)
     {
         __partial_sort(__first, __middle, __last, davis::value_type(__first));
@@ -1642,7 +1645,7 @@ namespace davis{
     }
 
     template <class _RandomAccessIterator, class _Compare>
-    void partial_sort(_RandomAccessIterator __first, _RandomAccessIterator middle,
+    void partial_sort(_RandomAccessIterator __first, _RandomAccessIterator __middle,
                       _RandomAccessIterator __last, _Compare __comp)
     {
         __partial_sort(__first, __middle, __last, davis::value_type(__first),__comp);
@@ -1792,8 +1795,8 @@ namespace davis{
         __insertion_sort(__first, __last, __comp);
     }
     template <class _RandomAccessIterator, class _Compare>
-    void nth_element(_RandomAccessIterator __first, _RandomAccessIterator nth,
-                     _RandomAccessIterator __last, _Compare _comp)
+    void nth_element(_RandomAccessIterator __first, _RandomAccessIterator __nth,
+                     _RandomAccessIterator __last, _Compare __comp)
     {
         __nth_element(__first, __nth, __last, davis::value_type(__first),__comp);
     }
@@ -1905,7 +1908,7 @@ namespace davis{
     }
     template <class _ForwardIterator, class _Tp, class _Compare>
     _ForwardIterator upper_bound(_ForwardIterator __first, _ForwardIterator __last,
-                                const _Tp &val, _Compare __comp)
+                                const _Tp &__val, _Compare __comp)
     {
         return __upper_bound(__first, __last, __val, davis::distance_type(__first),__comp);
     }
@@ -1920,7 +1923,7 @@ namespace davis{
     //     {
     //         _Distance __half = __len >> 1;
     //         __middle = __first;
-    //         daivs::advance(__middle, __half);
+    //         davis::advance(__middle, __half);
     //         if(__val<*__middle){
     //             __len = __half;
     //         }else if(*__middle<__val){
@@ -1940,7 +1943,7 @@ namespace davis{
     // inline std::pair<_ForwardIterator, _ForwardIterator>
     // equal_range(_ForwardIterator __first, _ForwardIterator __last, const _Tp &__val)
     // {
-    //     return __equal_range(__first,__last,__val,daivs::distance_type(__first));
+    //     return __equal_range(__first,__last,__val,davis::distance_type(__first));
     // }
     // template <class _ForwardIterator, class _Tp, class _Distance,class _Compare>
     // std::pair<_ForwardIterator, _ForwardIterator>
@@ -1953,7 +1956,7 @@ namespace davis{
     //     {
     //         _Distance __half = __len >> 1;
     //         __middle = __first;
-    //         daivs::advance(__middle, __half);
+    //         davis::advance(__middle, __half);
     //         if (__comp(__val, *__middle))
     //         {
     //             __len = __half;
@@ -1979,7 +1982,7 @@ namespace davis{
     // equal_range(_ForwardIterator __first, _ForwardIterator __last, const _Tp &__val,
     //             _Compare __comp)
     // {
-    //     return __equal_range(__first, __last, __val, daivs::distance_type(__first),__comp);
+    //     return __equal_range(__first, __last, __val, davis::distance_type(__first),__comp);
     // }
 
     template <class _ForwardIterator, class _Tp>
@@ -2040,12 +2043,12 @@ namespace davis{
             if(*__last1<*__last2){
                 *--__result = *__last1;
                 if(__last1==__first1)
-                    return daivs::copy_backward(__first2,__last2,__result);
+                    return davis::copy_backward(__first2,__last2,__result);
                 --__last1;
             }else{
                 *--__result = *__last2;
                 if (__last2 == __first2)
-                    return daivs::copy_backward(__first1, __last1, __result);
+                    return davis::copy_backward(__first1, __last1, __result);
                 --__last2;
             }
         }
@@ -2164,14 +2167,14 @@ namespace davis{
             {
                 *--__result = *__last1;
                 if (__last1 == __first1)
-                    return daivs::copy_backward(__first2, __last2, __result);
+                    return davis::copy_backward(__first2, __last2, __result);
                 --__last1;
             }
             else
             {
                 *--__result = *__last2;
                 if (__last2 == __first2)
-                    return daivs::copy_backward(__first1, __last1, __result);
+                    return davis::copy_backward(__first1, __last1, __result);
                 --__last2;
             }
         }
@@ -2524,7 +2527,7 @@ namespace davis{
 
     template <class RandomAccessIterator, class _Compare>
     RandomAccessIterator is_heap_until(RandomAccessIterator __first,
-                                       RandomAccessIterator __last
+                                       RandomAccessIterator __last,
                                            _Compare __comp);
     //    Min/max
     template <class _Tp>
@@ -2568,15 +2571,15 @@ namespace davis{
     // template <class _Tp, class _Compare>
     // _Tp max(initializer_list<_Tp> il, _Compare __comp);
     template <class _Tp>
-    pair<const _Tp &, const _Tp &> minmax(const _Tp &a, const _Tp &b);
+    std::pair<const _Tp &, const _Tp &> minmax(const _Tp &a, const _Tp &b);
     template <class _Tp, class _Compare>
-    pair<const _Tp &, const _Tp &> minmax(const _Tp &a, const _Tp &b, _Compare __comp);
+    std::pair<const _Tp &, const _Tp &> minmax(const _Tp &a, const _Tp &b, _Compare __comp);
 
-    template <class _Tp>
-    pair<_Tp, _Tp> minmax(initializer_list<_Tp> il);
+    // template <class _Tp>
+    // std::pair<_Tp, _Tp> minmax(initializer_list<_Tp> il);
 
-    template <class _Tp, class _Compare>
-    pair<_Tp, _Tp> minmax(initializer_list<_Tp> il, _Compare __comp);
+    // template <class _Tp, class _Compare>
+    // std::pair<_Tp, _Tp> minmax(initializer_list<_Tp> il, _Compare __comp);
 
     template <class _ForwardIterator>
     _ForwardIterator min_element(_ForwardIterator __first, _ForwardIterator __last)
@@ -2627,11 +2630,11 @@ namespace davis{
         return __result;
     }
     template <class _ForwardIterator>
-    pair<_ForwardIterator, _ForwardIterator>
+    std::pair<_ForwardIterator, _ForwardIterator>
     minmax_element(_ForwardIterator __first, _ForwardIterator __last);
 
     template <class _ForwardIterator, class _Compare>
-    pair<_ForwardIterator, _ForwardIterator>
+    std::pair<_ForwardIterator, _ForwardIterator>
     minmax_element(_ForwardIterator __first, _ForwardIterator __last, _Compare __comp);
 
     template <class _InputIterator1, class _InputIterator2>

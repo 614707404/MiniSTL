@@ -273,6 +273,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+test/algorithm_test.o: test/algorithm_test.cpp.o
+.PHONY : test/algorithm_test.o
+
+# target to build an object file
+test/algorithm_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/algorithm_test.cpp.o
+.PHONY : test/algorithm_test.cpp.o
+
+test/algorithm_test.i: test/algorithm_test.cpp.i
+.PHONY : test/algorithm_test.i
+
+# target to preprocess a source file
+test/algorithm_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/algorithm_test.cpp.i
+.PHONY : test/algorithm_test.cpp.i
+
+test/algorithm_test.s: test/algorithm_test.cpp.s
+.PHONY : test/algorithm_test.s
+
+# target to generate assembly for a file
+test/algorithm_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/algorithm_test.cpp.s
+.PHONY : test/algorithm_test.cpp.s
+
 test/deque_test.o: test/deque_test.cpp.o
 .PHONY : test/deque_test.o
 
@@ -559,6 +583,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... test/algorithm_test.o"
+	@echo "... test/algorithm_test.i"
+	@echo "... test/algorithm_test.s"
 	@echo "... test/deque_test.o"
 	@echo "... test/deque_test.i"
 	@echo "... test/deque_test.s"

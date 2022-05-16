@@ -370,7 +370,7 @@ namespace davis
     }
 
     template <class _Tp,
-              class _CharT = char, class _Traits = char_traits<_CharT>,
+              class _CharT = char, class _Traits = davis::iterator_traits<_CharT>,
               class _Dist = ptrdiff_t>
     class istream_iterator
     {
@@ -444,7 +444,7 @@ namespace davis
     class ostream_iterator
     {
     protected:
-        ostream *_M_stream;
+        std::ostream *_M_stream;
         const char *_M_string;
 
     public:
@@ -454,8 +454,8 @@ namespace davis
         typedef void pointer;
         typedef void reference;
 
-        ostream_iterator(ostream &__s) : _M_stream(&__s), _M_string(0) {}
-        ostream_iterator(ostream &__s, const char *__c)
+        ostream_iterator(std::ostream &__s) : _M_stream(&__s), _M_string(0) {}
+        ostream_iterator(std::ostream &__s, const char *__c)
             : _M_stream(&__s), _M_string(__c) {}
         ostream_iterator<_Tp> &operator=(const _Tp &__value)
         {
