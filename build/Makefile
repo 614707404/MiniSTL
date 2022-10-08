@@ -65,15 +65,29 @@ CMAKE_BINARY_DIR = /myProkect/MiniSTL/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
 
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-.PHONY : rebuild_cache/fast
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -84,6 +98,47 @@ edit_cache:
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
 .PHONY : edit_cache/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -117,6 +172,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named UniTest
+
+# Build rule for target.
+UniTest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 UniTest
+.PHONY : UniTest
+
+# fast build rule for target.
+UniTest/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/build
+.PHONY : UniTest/fast
+
+#=============================================================================
 # Target rules for targets named main
 
 # Build rule for target.
@@ -128,6 +196,58 @@ main: cmake_check_build_system
 main/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
+
+#=============================================================================
+# Target rules for targets named gmock_main
+
+# Build rule for target.
+gmock_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock_main
+.PHONY : gmock_main
+
+# fast build rule for target.
+gmock_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build
+.PHONY : gmock_main/fast
+
+#=============================================================================
+# Target rules for targets named gmock
+
+# Build rule for target.
+gmock: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock
+.PHONY : gmock
+
+# fast build rule for target.
+gmock/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build
+.PHONY : gmock/fast
+
+#=============================================================================
+# Target rules for targets named gtest_main
+
+# Build rule for target.
+gtest_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest_main
+.PHONY : gtest_main
+
+# fast build rule for target.
+gtest_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
+.PHONY : gtest_main/fast
+
+#=============================================================================
+# Target rules for targets named gtest
+
+# Build rule for target.
+gtest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest
+.PHONY : gtest
+
+# fast build rule for target.
+gtest/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build
+.PHONY : gtest/fast
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -153,6 +273,294 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+test/algorithm_test.o: test/algorithm_test.cpp.o
+.PHONY : test/algorithm_test.o
+
+# target to build an object file
+test/algorithm_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/algorithm_test.cpp.o
+.PHONY : test/algorithm_test.cpp.o
+
+test/algorithm_test.i: test/algorithm_test.cpp.i
+.PHONY : test/algorithm_test.i
+
+# target to preprocess a source file
+test/algorithm_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/algorithm_test.cpp.i
+.PHONY : test/algorithm_test.cpp.i
+
+test/algorithm_test.s: test/algorithm_test.cpp.s
+.PHONY : test/algorithm_test.s
+
+# target to generate assembly for a file
+test/algorithm_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/algorithm_test.cpp.s
+.PHONY : test/algorithm_test.cpp.s
+
+test/deque_test.o: test/deque_test.cpp.o
+.PHONY : test/deque_test.o
+
+# target to build an object file
+test/deque_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/deque_test.cpp.o
+.PHONY : test/deque_test.cpp.o
+
+test/deque_test.i: test/deque_test.cpp.i
+.PHONY : test/deque_test.i
+
+# target to preprocess a source file
+test/deque_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/deque_test.cpp.i
+.PHONY : test/deque_test.cpp.i
+
+test/deque_test.s: test/deque_test.cpp.s
+.PHONY : test/deque_test.s
+
+# target to generate assembly for a file
+test/deque_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/deque_test.cpp.s
+.PHONY : test/deque_test.cpp.s
+
+test/list_test.o: test/list_test.cpp.o
+.PHONY : test/list_test.o
+
+# target to build an object file
+test/list_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/list_test.cpp.o
+.PHONY : test/list_test.cpp.o
+
+test/list_test.i: test/list_test.cpp.i
+.PHONY : test/list_test.i
+
+# target to preprocess a source file
+test/list_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/list_test.cpp.i
+.PHONY : test/list_test.cpp.i
+
+test/list_test.s: test/list_test.cpp.s
+.PHONY : test/list_test.s
+
+# target to generate assembly for a file
+test/list_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/list_test.cpp.s
+.PHONY : test/list_test.cpp.s
+
+test/map_test.o: test/map_test.cpp.o
+.PHONY : test/map_test.o
+
+# target to build an object file
+test/map_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/map_test.cpp.o
+.PHONY : test/map_test.cpp.o
+
+test/map_test.i: test/map_test.cpp.i
+.PHONY : test/map_test.i
+
+# target to preprocess a source file
+test/map_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/map_test.cpp.i
+.PHONY : test/map_test.cpp.i
+
+test/map_test.s: test/map_test.cpp.s
+.PHONY : test/map_test.s
+
+# target to generate assembly for a file
+test/map_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/map_test.cpp.s
+.PHONY : test/map_test.cpp.s
+
+test/multimap_test.o: test/multimap_test.cpp.o
+.PHONY : test/multimap_test.o
+
+# target to build an object file
+test/multimap_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multimap_test.cpp.o
+.PHONY : test/multimap_test.cpp.o
+
+test/multimap_test.i: test/multimap_test.cpp.i
+.PHONY : test/multimap_test.i
+
+# target to preprocess a source file
+test/multimap_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multimap_test.cpp.i
+.PHONY : test/multimap_test.cpp.i
+
+test/multimap_test.s: test/multimap_test.cpp.s
+.PHONY : test/multimap_test.s
+
+# target to generate assembly for a file
+test/multimap_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multimap_test.cpp.s
+.PHONY : test/multimap_test.cpp.s
+
+test/multiset_test.o: test/multiset_test.cpp.o
+.PHONY : test/multiset_test.o
+
+# target to build an object file
+test/multiset_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multiset_test.cpp.o
+.PHONY : test/multiset_test.cpp.o
+
+test/multiset_test.i: test/multiset_test.cpp.i
+.PHONY : test/multiset_test.i
+
+# target to preprocess a source file
+test/multiset_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multiset_test.cpp.i
+.PHONY : test/multiset_test.cpp.i
+
+test/multiset_test.s: test/multiset_test.cpp.s
+.PHONY : test/multiset_test.s
+
+# target to generate assembly for a file
+test/multiset_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/multiset_test.cpp.s
+.PHONY : test/multiset_test.cpp.s
+
+test/set_test.o: test/set_test.cpp.o
+.PHONY : test/set_test.o
+
+# target to build an object file
+test/set_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/set_test.cpp.o
+.PHONY : test/set_test.cpp.o
+
+test/set_test.i: test/set_test.cpp.i
+.PHONY : test/set_test.i
+
+# target to preprocess a source file
+test/set_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/set_test.cpp.i
+.PHONY : test/set_test.cpp.i
+
+test/set_test.s: test/set_test.cpp.s
+.PHONY : test/set_test.s
+
+# target to generate assembly for a file
+test/set_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/set_test.cpp.s
+.PHONY : test/set_test.cpp.s
+
+test/unordered_map_test.o: test/unordered_map_test.cpp.o
+.PHONY : test/unordered_map_test.o
+
+# target to build an object file
+test/unordered_map_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_map_test.cpp.o
+.PHONY : test/unordered_map_test.cpp.o
+
+test/unordered_map_test.i: test/unordered_map_test.cpp.i
+.PHONY : test/unordered_map_test.i
+
+# target to preprocess a source file
+test/unordered_map_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_map_test.cpp.i
+.PHONY : test/unordered_map_test.cpp.i
+
+test/unordered_map_test.s: test/unordered_map_test.cpp.s
+.PHONY : test/unordered_map_test.s
+
+# target to generate assembly for a file
+test/unordered_map_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_map_test.cpp.s
+.PHONY : test/unordered_map_test.cpp.s
+
+test/unordered_multimap_test.o: test/unordered_multimap_test.cpp.o
+.PHONY : test/unordered_multimap_test.o
+
+# target to build an object file
+test/unordered_multimap_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multimap_test.cpp.o
+.PHONY : test/unordered_multimap_test.cpp.o
+
+test/unordered_multimap_test.i: test/unordered_multimap_test.cpp.i
+.PHONY : test/unordered_multimap_test.i
+
+# target to preprocess a source file
+test/unordered_multimap_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multimap_test.cpp.i
+.PHONY : test/unordered_multimap_test.cpp.i
+
+test/unordered_multimap_test.s: test/unordered_multimap_test.cpp.s
+.PHONY : test/unordered_multimap_test.s
+
+# target to generate assembly for a file
+test/unordered_multimap_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multimap_test.cpp.s
+.PHONY : test/unordered_multimap_test.cpp.s
+
+test/unordered_multiset_test.o: test/unordered_multiset_test.cpp.o
+.PHONY : test/unordered_multiset_test.o
+
+# target to build an object file
+test/unordered_multiset_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multiset_test.cpp.o
+.PHONY : test/unordered_multiset_test.cpp.o
+
+test/unordered_multiset_test.i: test/unordered_multiset_test.cpp.i
+.PHONY : test/unordered_multiset_test.i
+
+# target to preprocess a source file
+test/unordered_multiset_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multiset_test.cpp.i
+.PHONY : test/unordered_multiset_test.cpp.i
+
+test/unordered_multiset_test.s: test/unordered_multiset_test.cpp.s
+.PHONY : test/unordered_multiset_test.s
+
+# target to generate assembly for a file
+test/unordered_multiset_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_multiset_test.cpp.s
+.PHONY : test/unordered_multiset_test.cpp.s
+
+test/unordered_set_test.o: test/unordered_set_test.cpp.o
+.PHONY : test/unordered_set_test.o
+
+# target to build an object file
+test/unordered_set_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_set_test.cpp.o
+.PHONY : test/unordered_set_test.cpp.o
+
+test/unordered_set_test.i: test/unordered_set_test.cpp.i
+.PHONY : test/unordered_set_test.i
+
+# target to preprocess a source file
+test/unordered_set_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_set_test.cpp.i
+.PHONY : test/unordered_set_test.cpp.i
+
+test/unordered_set_test.s: test/unordered_set_test.cpp.s
+.PHONY : test/unordered_set_test.s
+
+# target to generate assembly for a file
+test/unordered_set_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/unordered_set_test.cpp.s
+.PHONY : test/unordered_set_test.cpp.s
+
+test/vector_test.o: test/vector_test.cpp.o
+.PHONY : test/vector_test.o
+
+# target to build an object file
+test/vector_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/vector_test.cpp.o
+.PHONY : test/vector_test.cpp.o
+
+test/vector_test.i: test/vector_test.cpp.i
+.PHONY : test/vector_test.i
+
+# target to preprocess a source file
+test/vector_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/vector_test.cpp.i
+.PHONY : test/vector_test.cpp.i
+
+test/vector_test.s: test/vector_test.cpp.s
+.PHONY : test/vector_test.s
+
+# target to generate assembly for a file
+test/vector_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UniTest.dir/build.make CMakeFiles/UniTest.dir/test/vector_test.cpp.s
+.PHONY : test/vector_test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -160,11 +568,57 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... test"
+	@echo "... UniTest"
+	@echo "... gmock"
+	@echo "... gmock_main"
+	@echo "... gtest"
+	@echo "... gtest_main"
 	@echo "... main"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... test/algorithm_test.o"
+	@echo "... test/algorithm_test.i"
+	@echo "... test/algorithm_test.s"
+	@echo "... test/deque_test.o"
+	@echo "... test/deque_test.i"
+	@echo "... test/deque_test.s"
+	@echo "... test/list_test.o"
+	@echo "... test/list_test.i"
+	@echo "... test/list_test.s"
+	@echo "... test/map_test.o"
+	@echo "... test/map_test.i"
+	@echo "... test/map_test.s"
+	@echo "... test/multimap_test.o"
+	@echo "... test/multimap_test.i"
+	@echo "... test/multimap_test.s"
+	@echo "... test/multiset_test.o"
+	@echo "... test/multiset_test.i"
+	@echo "... test/multiset_test.s"
+	@echo "... test/set_test.o"
+	@echo "... test/set_test.i"
+	@echo "... test/set_test.s"
+	@echo "... test/unordered_map_test.o"
+	@echo "... test/unordered_map_test.i"
+	@echo "... test/unordered_map_test.s"
+	@echo "... test/unordered_multimap_test.o"
+	@echo "... test/unordered_multimap_test.i"
+	@echo "... test/unordered_multimap_test.s"
+	@echo "... test/unordered_multiset_test.o"
+	@echo "... test/unordered_multiset_test.i"
+	@echo "... test/unordered_multiset_test.s"
+	@echo "... test/unordered_set_test.o"
+	@echo "... test/unordered_set_test.i"
+	@echo "... test/unordered_set_test.s"
+	@echo "... test/vector_test.o"
+	@echo "... test/vector_test.i"
+	@echo "... test/vector_test.s"
 .PHONY : help
 
 

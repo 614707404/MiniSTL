@@ -1,83 +1,61 @@
-#ifndef _DAVIS_ALLOC_H
-#define  _DAVIS_ALLOC_H
-#include <new>
-#include <cstddef>
-#include <cstdlib>
-#include <climits>
-#include <iostream>
-namespace DAVIS
-{
-    template<class T>
-    inline T* _allocate(ptrdiff_t size, T*){
-        
-        std::set_new_handler(0);
-        
-        T* temp = (T*) (::operator new((size_t)(size * sizeof(T))));
-        if(temp == 0){
-            std::cerr<<"out of memory"<<std::endl;
-            exit(1);
-        }
-        return temp;
-    }
+// //具有次配置能力（sub-allocation）的SGI空间配置器
+// //暂不实现
+// #ifndef _DAVIS_ALLOC_H
+// #define _DAVIS_ALLOC_H
 
-    template<class T>
-    inline void _deallocate(T* buffer){
-        ::operator delete(buffer);
-    }
+// #if 0
+// #include <new>
+// #define __THROW_BAD_ALLOC throw bad_alloc
+// #elif !defined(__THROW_BAD_ALLOC)
+// #include <iostream>
+// #define __THROW_BAD_ALLOC                      \
+//     std::cerr << "out of memory" << std::endl; \
+//     exit(1);
+// #endif
+// namespace DAVIS
+// {
+//     template <int inst>
+//     class __mallo_alloc_template
+//     {
+//     private:
+//         static void *oom_malloc(size_t);
+//         static void *oom_realloc(void *, size_t);
+//         static void (*__malloc_alloc_oom_handler)();
 
-    template<class T1,class T2>
-    inline void _construct(T1* p,const T2& value){
-        new(p) T1(value);
-    }
+//     public:
+//         static void *allocate(size_t n)
+//         {
+//             void *result = malloc(n);
+//             if (result == 0)
+//             {
+//                 result = oom_malloc(n);
+//             }
+//             return result;
+//         }
+//         static void deallocate(void *p, size_t)
+//         {
+//             free(p);
+//         }
+//         static void *reallocate(void *p, size_t, size_t new_sz)
+//         {
+//             void *result = realloc(p, new_sz);
+//             if (result == 0)
+//             {
+//                 result = oom_realloc(p, new_sz);
+//             }
+//             return result;
+//         }
+//         static void (*set_malloc_handler(void (*f)()))()
+//         {
+//             void (*old)() = __malloc_alloc_oom_handler;
+//             __malloc_alloc_oom_handler = f;
+//             return (old);
+//         }
+//     };
+//     template <int inst>
+//     void (*__malloc_alloc_template<inst>::__malloc_alloc_oom_handler)() = 0;
 
-    template<class T>
-    inline void _destroy(T* ptr){
-        ptr->~T();
-    }
-
-    template <class T>
-    class allocator{
-    public:
-        typedef T value_type;
-        typedef T* pointer;
-        typedef const T* const_pointer;
-        typedef T& reference;
-        typedef const T& const_reference;
-        typedef size_t size_type;
-        typedef ptrdiff_t difference_type;
-
-        template<class U>
-        struct rebind{
-            typedef allocator<U> other;
-        };
-        pointer allocate(size_type n, const void* hint=0){
-            return _allocate((difference_type)n, (pointer)0);
-        }
-        void deallocate(pointer p, size_type n) { 
-            _deallocate(p);
-        }
-
-        void construct(pointer p, const T& value){
-            _construct(p,value);
-        }
-        void destroy(pointer p){
-            _destroy(p);
-        }
-
-        //返回某个对象的地址
-        pointer address(reference x) {
-            return (pointer)&x;
-        }
-
-        //返回某个const对象的地址
-        const_pointer const_address(const_reference x){
-            return (const_pointer)&x;
-        }
-        //返回可成功配置的最大值
-        size_type max_size() const {
-            return size_type(UINT_MAX/sizeof(T));
-        }
-    };
-}
-
-#endif
+//     template <int inst>
+//     void *__malloc_alloc_template<inst>
+// }
+// #endif
